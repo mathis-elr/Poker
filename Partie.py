@@ -12,7 +12,7 @@ class Partie(CTk):
         set_appearance_mode("dark")
 
         self.paquet = PaquetCartes(self) #type : PaquetCartes
-        self.flop = Board() #type : Flop
+        self.flop = Board(self,self.paquet) #type : Flop
         self.liste_joueurs = [Joueur(joueurs[i],i,self) for i in range (len(joueurs))] #liste des joueurs de type Joueur(nom,numero,partie)
         self.MEJ = 0
         
@@ -92,8 +92,13 @@ class Partie(CTk):
         '''
         #frame représentant le plateau de jeu (apparissions des cartes)
         frameCartes = CTkFrame(self, width=900, height=250,fg_color="green",border_color="red",border_width=5,corner_radius=60)
-        frameCartes.grid(row=2,column=1,columnspan=3,padx=10,pady=10)      
+        frameCartes.grid(row=2,column=1,columnspan=3,padx=10,pady=10)
         
+        self.frameCarte1= CTkFrame(frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
+        self.frameCarte2 = CTkFrame(frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
+        self.frameCarte3= CTkFrame(frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
+        self.frameCarte4 = CTkFrame(frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
+        self.frameCarte5 = CTkFrame(frameCartes, fg_color="white",width=140,height=195,corner_radius=20)  
         
             
     #--------
@@ -124,7 +129,7 @@ class Partie(CTk):
             self.liste_joueurs[i].faireApparaitreFrame(posX[i],posY[i]) 
             
     def changerMain(self):
-        self.main = self.liste_joueurs[(self.main+1)%len(self.liste_joueurs)].numero #on passe la main au joueur suivant avec modelio pour que le suivant du dernier joueur soit le premier, type : int
+        self.main = self.liste_joueurs[(self.main+1)%len(self.liste_joueurs)].numero #on passe la main au joueur suivant avec modulo pour que le suivant du dernier joueur soit le premier, type : int
         self.liste_joueurs[self.main].setMain()
     
     #--------
