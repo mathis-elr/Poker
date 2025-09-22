@@ -50,8 +50,8 @@ class Joueur():
         self.labelMEJVariable = CTkLabel(self.frameMEJ, text="{} $".format(self.getMEJ()), font=("Arial",12,"bold"),text_color="black")
 
         self.frameBoutons = CTkFrame(self.frameAutre, fg_color="white")
-        self.btnCheckJ = CTkButton(self.frameBoutons, text="check",text_color='black', fg_color='darkorange',hover_color='orange',corner_radius=50,width=100, command=self.check)
-        self.btnSeCoucher = CTkButton(self.frameBoutons, text="se coucher",text_color='white', fg_color='darkblue',hover_color='blue',corner_radius=50, width=100,command=self.seCoucher)
+        self.btnCheckJ = CTkButton(self.frameBoutons, text="check",text_color='black', fg_color='darkorange',hover_color='orange',corner_radius=50,width=100, command=self.check,state="disable")
+        self.btnSeCoucher = CTkButton(self.frameBoutons, text="se coucher",text_color='white', fg_color='darkblue',hover_color='blue',corner_radius=50, width=100,command=self.seCoucher,state="disable")
 
         '''
         MISER
@@ -59,11 +59,11 @@ class Joueur():
         #frame pour miser 
         self.frameMiser = CTkFrame(self.frame,fg_color="black",border_color="black",border_width=5,corner_radius=10)
         #entrée pour la mise en jeu souhaité
-        self.entryMiseEnJeu = CTkEntry(self.frameMiser, placeholder_text="mise")
+        self.entryMiseEnJeu = CTkEntry(self.frameMiser, state="disabled")
         #bouton pour valider la mise en jeu
-        self.btnMiser = CTkButton(self.frameMiser, text="Miser",text_color='black', fg_color='white',hover_color='lightgrey',command=self.mise)
+        self.btnMiser = CTkButton(self.frameMiser, text="Miser",text_color='black', fg_color='white',hover_color='lightgrey',command=self.mise,state="disable")
         #bouton pour allin
-        self.btnAllIn = CTkButton(self.frameMiser, text="All In",text_color='black', fg_color='white',hover_color='red',command= self.allIn)
+        self.btnAllIn = CTkButton(self.frameMiser, text="All In",text_color='black', fg_color='white',hover_color='red',command= self.allIn,state="disable")
         
         
     #--------
@@ -85,7 +85,23 @@ class Joueur():
         self.AllInStatut = not self.AllInStatut
         
     def setMain(self):
-        self.main = not self.main
+        if self.main:
+            self.main = False
+            self.frame.configure(fg_color="white")
+            self.btnAllIn.configure(state="disable")
+            self.btnCheckJ.configure(state="disable")
+            self.btnMiser.configure(state="disable")
+            self.btnSeCoucher.configure(state="disable")
+            self.entryMiseEnJeu.configure(state="disabled")
+        else:
+            self.main = True
+            self.frame.configure(fg_color="#5CB5FF")
+            self.btnAllIn.configure(state="normal")
+            self.btnCheckJ.configure(state="normal")
+            self.btnMiser.configure(state="normal")
+            self.btnSeCoucher.configure(state="normal")
+            self.entryMiseEnJeu.configure(state="normal", placeholder_text="mise")
+        self.partie.update()
       
     #--------
     #getteurs

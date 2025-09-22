@@ -16,14 +16,14 @@ class Partie(CTk):
         self.liste_joueurs = [Joueur(joueur,self) for joueur in joueurs] #liste des joueurs de type Joueur
         self.MEJ = 0
         
-        self.donnerLesMains() #donne deux cartes à chaque jour type : Carte
-        
-        self.main = self.setMainDepart() #joueur type : Joueur
-        
         posX = [1,1,3,3] # =lignes dans l'application (row dans le code)
         posY = [1,3,3,1] # =colonnes dans l'application (column dans le code)
         #crée un frame pour chaque joueur  
-        self.creeFrames(posX,posY)         
+        self.creeFrames(posX,posY)     
+        
+        self.donnerLesMains() #donne deux cartes à chaque jour type : Carte
+        
+        self.main = self.setMainDepart() #joueur type : Joueur    
         
         
         '''
@@ -100,6 +100,7 @@ class Partie(CTk):
             
     def setMainDepart(self):
         self.main = random.choice(self.liste_joueurs) #type : Joueur
+        self.main.setMain()
         
     def creeFrames(self,posX,posY):
         for i in range(len(self.liste_joueurs)):
