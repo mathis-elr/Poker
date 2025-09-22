@@ -8,3 +8,4 @@ appdefinirJoueurs.mainloop()
 if appdefinirJoueurs.noms_joueurs:
     applicationPartie = Partie(appdefinirJoueurs.noms_joueurs)
     applicationPartie.mainloop()
+  

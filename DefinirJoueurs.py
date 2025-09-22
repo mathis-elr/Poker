@@ -3,7 +3,7 @@ from customtkinter import *
 class DefinirJoueurs(CTk):
 
     def __init__(self):
-        super().__init__()
+        super().__init__() #hérite de Ctk
         #crée la page
         self.title("Saisie des joueurs")
         set_appearance_mode("dark")    
@@ -68,6 +68,7 @@ class DefinirJoueurs(CTk):
             
             
     def LancerPartie(self):
+        #verifier les noms saisies
         for joueur in self.joueurs:
             if joueur.get() == '' or ' ' in joueur.get():
                 joueur.configure(border_color='red', placeholder_text_color='red')
@@ -76,7 +77,7 @@ class DefinirJoueurs(CTk):
           
         self.noms_joueurs = [joueur.get() for joueur in self.joueurs]  
             
-        if '' not in  self.noms_joueurs:     
+        if '' not in self.noms_joueurs:     
             self.destroy()
             
 

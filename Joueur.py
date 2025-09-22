@@ -13,16 +13,12 @@ class Joueur():
         self.main = False
         self.partie = partie
         
-        
-        '''
-        CREE LES INFOS DU JOUEURS SUR APPLICATION
-        '''
         self.frame = CTkFrame(partie, fg_color="white",corner_radius=15)
         
         '''
         NOM JOUEUR
         '''
-        label_nomJoueur = CTkLabel(self.frame, text="{}".format(self.getNom()), font=("Arial",15,"bold"), text_color="black")
+        self.label_nomJoueur = CTkLabel(self.frame, text="{}".format(self.getNom()), font=("Arial",15,"bold"), text_color="black")
         
         '''
         CARTES PHYSIQUE CLIQUABLES
@@ -33,6 +29,7 @@ class Joueur():
         self.frameVoirCarte1.bind("<Button-1>",self.voirCarte1)
         self.frameVoirCarte2.bind("<Button-1>",self.voirCarte2)
         
+
         '''
         SOLDE/MEJ/BOUTONS
         '''
@@ -133,8 +130,8 @@ class Joueur():
         self.label_nomJoueur.grid(row=1,column=1,columnspan=3,padx=5,pady=5)
         
         #ligne 2
-        self.self.frameVoirCarte1.grid(row=2,column=1,padx=10,pady=10)
-        self.self.frameVoirCarte2.grid(row=2,column=2,padx=10,pady=10)
+        self.frameVoirCarte1.grid(row=2,column=1,padx=10,pady=10)
+        self.frameVoirCarte2.grid(row=2,column=2,padx=10,pady=10)
 
         self.frameAutre.grid(row=2,column=3,padx=10,pady=10)
         
@@ -158,14 +155,14 @@ class Joueur():
         
         
     def voirCarte1(self,event):
-        self.getCarte1().carte_physique(self.frameVoirCarte1)
+        self.getCarte1().afficherCartePhysiqueJoueur(self.frameVoirCarte1)
         self.partie.update()
-        self.partie.after(3000,lambda:self.getCarte1().dos_carte(self.frameVoirCarte1)) #lambda : pour pas que sa s'exectute tout dessuite et que ca "freeze" le mainloop
+        self.partie.after(3000,lambda:self.getCarte1().cacherCartePhysiqueJoueur(self.frameVoirCarte1)) #lambda : pour pas que sa s'exectute tout dessuite et que ça "freeze" le mainloop (ex : pouvoir regarder deux cartes en même temps)
     
     def voirCarte2(self,event):
-        self.getCarte2().carte_physique(self.frameVoirCarte2)
+        self.getCarte2().afficherCartePhysiqueJoueur(self.frameVoirCarte2)
         self.partie.update()
-        self.partie.after(3000,lambda:self.getCarte2().dos_carte(self.frameVoirCarte2))
+        self.partie.after(3000,lambda:self.getCarte2().cacherCartePhysiqueJoueur(self.frameVoirCarte2))
         
     def allIn(self):
         pass 

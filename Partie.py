@@ -11,11 +11,14 @@ class Partie(CTk):
         self.title("♠️♣️ poker ♦️♥️")
         set_appearance_mode("dark")
 
-        self.paquet = PaquetCartes() #type : PaquetCartes
+        self.paquet = PaquetCartes(self) #type : PaquetCartes
         self.flop = Board() #type : Flop
         self.liste_joueurs = [Joueur(joueur,self) for joueur in joueurs] #liste des joueurs de type Joueur
         self.MEJ = 0
-        self.main = self.setMainDepart()
+        
+        self.donnerLesMains() #donne deux cartes à chaque jour type : Carte
+        
+        self.main = self.setMainDepart() #joueur type : Joueur
         
         posX = [1,1,3,3] # =lignes dans l'application (row dans le code)
         posY = [1,3,3,1] # =colonnes dans l'application (column dans le code)
@@ -100,7 +103,7 @@ class Partie(CTk):
         
     def creeFrames(self,posX,posY):
         for i in range(len(self.liste_joueurs)):
-            self.liste_joueurs[i].faireApparaitreFrame(self,posX[i],posY[i]) 
+            self.liste_joueurs[i].faireApparaitreFrame(posX[i],posY[i]) 
     
     
     #--------
