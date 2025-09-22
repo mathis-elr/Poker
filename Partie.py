@@ -13,7 +13,7 @@ class Partie(CTk):
 
         self.paquet = PaquetCartes(self) #type : PaquetCartes
         self.flop = Board() #type : Flop
-        self.liste_joueurs = [Joueur(joueur,self) for joueur in joueurs] #liste des joueurs de type Joueur
+        self.liste_joueurs = [Joueur(joueurs[i],i,self) for i in range (len(joueurs))] #liste des joueurs de type Joueur(nom,numero,partie)
         self.MEJ = 0
         
         posX = [1,1,3,3] # =lignes dans l'application (row dans le code)
@@ -21,10 +21,26 @@ class Partie(CTk):
         #crée un frame pour chaque joueur  
         self.creeFrames(posX,posY)     
         
-        self.donnerLesMains() #donne deux cartes à chaque jour type : Carte
+        self.donnerLesMains() #donne deux cartes à chaque jour, type : Carte
         
-        self.main = self.setMainDepart() #joueur type : Joueur    
+        self.main = self.setMainDepart() #personne qui doit jouer, type : int (numero du joueur)
+        self.bigBlind = self.liste_joueurs[(self.main-1)%len(self.liste_joueurs)].numero #joueur qui précède le joueur actuel avec module pour que precedent de 0 → dernier elmt de la liste, type : int (numero du joueur)
+        self.smallBlind = self.main # = joueur qui commence, type : int (numero du joueur)
         
+        '''
+        INITIALISATION DES MISES DE DEPART
+        '''
+        self.liste_joueurs[self.bigBlind].MEJ = 500
+        self.liste_joueurs[self.bigBlind].solde-=500
+    
+        self.liste_joueurs[self.smallBlind].MEJ = 250
+        self.liste_joueurs[self.smallBlind].solde-=250
+        
+        self.liste_joueurs[self.bigBlind].labelSoldeVariable.configure(text="{}".format(self.liste_joueurs[self.bigBlind].solde))
+        self.liste_joueurs[self.bigBlind].labelMEJVariable.configure(text="{}".format(self.liste_joueurs[self.bigBlind].MEJ))
+        self.liste_joueurs[self.smallBlind].labelSoldeVariable.configure(text="{}".format(self.liste_joueurs[self.smallBlind].solde))
+        self.liste_joueurs[self.smallBlind].labelMEJVariable.configure(text="{}".format(self.liste_joueurs[self.smallBlind].MEJ))
+        self.update()
         
         '''
         FRAME INFOS GENERALES
@@ -57,8 +73,8 @@ class Partie(CTk):
         labelMiseEnJeu = CTkLabel(frameLabelMEJ, text="Mise En Jeu", font=("Arial",15),text_color="white")
         labelMiseEnJeu.grid(row=2,column=1,padx=10,pady=10)
 
-        labelMiseEnJeuVariable = CTkLabel(frameMiseEnJeu, text="{} $".format(self.getMEJ()), font=("Arial",20,"bold"),text_color="gold")
-        labelMiseEnJeuVariable.grid(row=2,column=1,padx=10,pady=10)
+        self.labelMiseEnJeuVariable = CTkLabel(frameMiseEnJeu, text="700 $", font=("Arial",20,"bold"),text_color="gold")
+        self.labelMiseEnJeuVariable.grid(row=2,column=1,padx=10,pady=10)
                 
         '''
         MESSAGE INFOS
@@ -76,7 +92,7 @@ class Partie(CTk):
         '''
         #frame représentant le plateau de jeu (apparissions des cartes)
         frameCartes = CTkFrame(self, width=900, height=250,fg_color="green",border_color="red",border_width=5,corner_radius=60)
-        frameCartes.grid(row=2,column=1,columnspan=3,padx=20,pady=20)      
+        frameCartes.grid(row=2,column=1,columnspan=3,padx=10,pady=10)      
         
         
             
@@ -99,13 +115,17 @@ class Partie(CTk):
             joueur.donner_main(self.paquet)
             
     def setMainDepart(self):
-        self.main = random.choice(self.liste_joueurs) #type : Joueur
-        self.main.setMain()
+        numero_joueur = random.choice(self.liste_joueurs).numero #chosis un joueur au hasard pour commencer, type : int (numero du joueur)
+        self.liste_joueurs[numero_joueur].setMain() #on modifie la main du joueur qui commence
+        return numero_joueur
         
     def creeFrames(self,posX,posY):
         for i in range(len(self.liste_joueurs)):
             self.liste_joueurs[i].faireApparaitreFrame(posX[i],posY[i]) 
-    
+            
+    def changerMain(self):
+        self.main = self.liste_joueurs[(self.main+1)%len(self.liste_joueurs)].numero #on passe la main au joueur suivant avec modelio pour que le suivant du dernier joueur soit le premier, type : int
+        self.liste_joueurs[self.main].setMain()
     
     #--------
     # methodes

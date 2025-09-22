@@ -3,8 +3,9 @@ import time
 
 class Joueur():
     
-    def __init__(self,nom,partie):
+    def __init__(self,nom,numero,partie):
         self.nom = nom
+        self.numero = numero
         self.solde = 10000
         self.MEJ = 0
         self.CheckStatut = False
@@ -184,7 +185,32 @@ class Joueur():
         pass 
     
     def mise(self):
-        pass
+        montant = int(self.entryMiseEnJeu.get()) #on recupère le montant
+        if montant < self.solde and montant > 0: 
+            if (montant+self.MEJ) >= self.partie.liste_joueurs[(self.numero - 1)%len(self.partie.liste_joueurs)].MEJ: # le joueur doit s'aligner avec la mise du joueur précedent (on utilise modulo pour le joueur precedent, ainsi precedent de 0 → dernier elmt de la liste)
+                self.solde-=montant
+                self.MEJ+=montant
+                self.partie.MEJ+=montant
+                
+                self.entryMiseEnJeu.delete(0, "end")
+                self.labelSoldeVariable.configure(text="{}".format(self.solde))
+                self.labelMEJVariable.configure(text="{}".format(self.MEJ))
+                self.partie.labelMiseEnJeuVariable.configure(text="{}".format(self.partie.MEJ))
+                self.entryMiseEnJeu.configure(border_color="grey", text_color="white")
+                self.setMain() #on desactive sa main
+            
+                self.partie.changerMain() #on passe au joueur suivant
+                self.partie.update()
+            #sinon erreur le montant doit être compris entre 1 et la MEJ du joueur precedent (inclus) 
+            else:
+                self.entryMiseEnJeu.configure(border_color="red", text_color="red")
+            
+        #sinon erreur montant ne peut être supérieur au solde    
+        else:
+            self.entryMiseEnJeu.configure(border_color="red", text_color="red")
+        
+    
+            
     
     def check(self):
         pass
