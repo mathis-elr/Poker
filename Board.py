@@ -19,8 +19,9 @@ class Board():
         self.frameCarte3= CTkFrame(self.frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
         self.frameCarte4 = CTkFrame(self.frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
         self.frameCarte5 = CTkFrame(self.frameCartes, fg_color="white",width=140,height=195,corner_radius=20) 
+        
+        self.frameCartes.grid(row=2,column=1,columnspan=3,padx=10,pady=10)
 
-    
     #--------
     # setters
     #--------   

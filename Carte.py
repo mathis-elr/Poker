@@ -119,7 +119,7 @@ class Carte():
 
         #gros symboles au centre de la carte avec autant de symbole que la valeur de la carte
         if self.valeur==9 or self.valeur==10:
-            taille_symbole=30
+            taille_symbole=25
         elif self.valeur=='As' or self.valeur=='V' or self.valeur=='D' or self.valeur=='R':
             taille_symbole=45
         else:

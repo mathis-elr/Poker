@@ -1,5 +1,6 @@
 from customtkinter import *
 import time
+from DeterminerGagnant import DeterminerGagnant
 
 class Joueur():
     
@@ -51,8 +52,8 @@ class Joueur():
         self.labelMEJVariable = CTkLabel(self.frameMEJ, text="{} $".format(self.getMEJ()), font=("Arial",12,"bold"),text_color="black")
 
         self.frameBoutons = CTkFrame(self.frameAutre, fg_color="white")
-        self.btnCheckJ = CTkButton(self.frameBoutons, text="check",text_color='black', fg_color="#FDB470",hover_color='darkorange',corner_radius=50,width=100, command=self.check,state="disable")
-        self.btnSeCoucher = CTkButton(self.frameBoutons, text="se coucher",text_color='white', fg_color="#6B7AFF",hover_color='darkblue',corner_radius=50, width=100,command=self.seCoucher,state="disable")
+        self.btnCheckJ = CTkButton(self.frameBoutons, text="check",text_color='black', fg_color="#FDB470",hover_color='darkorange',corner_radius=50,width=100, command=self.check,state="disabled")
+        self.btnSeCoucher = CTkButton(self.frameBoutons, text="se coucher",text_color='white', fg_color="#6B7AFF",hover_color='darkblue',corner_radius=50, width=100,command=self.seCoucher,state="disabled")
 
         '''
         MISER
@@ -62,9 +63,9 @@ class Joueur():
         #entrée pour la mise en jeu souhaité
         self.entryMiseEnJeu = CTkEntry(self.frameMiser, state="disabled")
         #bouton pour valider la mise en jeu
-        self.btnMiser = CTkButton(self.frameMiser, text="Miser",text_color='black', fg_color='white',hover_color='lightgrey',command=self.mise,state="disable")
+        self.btnMiser = CTkButton(self.frameMiser, text="Miser",text_color='black', fg_color='white',hover_color='lightgrey',command=self.mise,state="disabled")
         #bouton pour allin
-        self.btnAllIn = CTkButton(self.frameMiser, text="All In",text_color='black', fg_color='white',hover_color='red',command= self.allIn,state="disable")
+        self.btnAllIn = CTkButton(self.frameMiser, text="All In",text_color='black', fg_color='white',hover_color='red',command= self.allIn,state="disabled")
         
         
     #--------
@@ -89,10 +90,10 @@ class Joueur():
         if self.main:
             self.main = False
             self.frame.configure(fg_color="white")
-            self.btnAllIn.configure(state="disable")
-            self.btnCheckJ.configure(state="disable")
-            self.btnMiser.configure(state="disable")
-            self.btnSeCoucher.configure(state="disable")
+            self.btnAllIn.configure(state="disabled")
+            self.btnCheckJ.configure(state="disabled")
+            self.btnMiser.configure(state="disabled")
+            self.btnSeCoucher.configure(state="disabled")
             self.entryMiseEnJeu.configure(state="disabled")
         else:
             self.main = True
@@ -102,12 +103,8 @@ class Joueur():
             self.btnSeCoucher.configure(state="normal")
             self.entryMiseEnJeu.configure(state="normal", placeholder_text="mise")
             
-            #si le jour precedent a check ou que je suis la small blinde et qu'avec le joueur precedent on à la même MEJ
-            #if self.partie.liste_joueurs[(self.numero - 1)%len(self.partie.liste_joueurs)].check \
-            #or self.partie.smallBlinde == self.numero and self.partie.liste_joueurs[(self.numero - 1)%len(self.partie.liste_joueurs)].MEJ == self.MEJ:
-            
-            #si ma mise est égale à la mise de tout les autres joueurs et dcp je pense que ya pas besoin de ça → (ou que le joueur precedent a check ou que je suis la small blinde et qu'avec le joueur precedent on à la même MEJ)
-            if None: 
+            #si ma mise est égale à la mise de tout les autres joueurs, le check est possible
+            if all(self.MEJ == joueur.MEJ for joueur in self.partie.liste_joueurs): 
                 self.btnCheckJ.configure(state="normal")
             #sinon le bouton reste desactivé
             
@@ -149,8 +146,13 @@ class Joueur():
     #--------
     #methodes
     #--------   
-    def faireApparaitreFrame(self,l,c):
-        self.frame.grid(row=l,column=c,padx=20,pady=20)
+    def faireApparaitreFrame(self):
+        
+        #position dans la grille
+        posX = [1, 1, 3, 3]  # lignes
+        posY = [1, 3, 3, 1]  # colonnes
+        
+        self.frame.grid(row=posX[self.numero],column=posY[self.numero],padx=20,pady=20)
         
         #ligne 1
         self.label_nomJoueur.grid(row=1,column=1,columnspan=3,padx=5,pady=5)
@@ -204,14 +206,30 @@ class Joueur():
                 self.MEJ+=montant
                 self.partie.MEJ+=montant
                 
-                self.entryMiseEnJeu.delete(0, "end")
-                self.labelSoldeVariable.configure(text="{}".format(self.solde))
-                self.labelMEJVariable.configure(text="{}".format(self.MEJ))
-                self.partie.labelMiseEnJeuVariable.configure(text="{}".format(self.partie.MEJ))
-                self.entryMiseEnJeu.configure(border_color="grey", text_color="white")
-                self.setMain() #on desactive sa main
-            
-                self.partie.changerMain() #on passe au joueur suivant
+                if all(joueur.MEJ==self.MEJ for joueur in self.partie.liste_joueurs): #PROBLEME si la big a surencheri le flop DOIT s'afficher dès que tout le monde a mise egale mais c'est pas le cas
+                    match len(self.partie.board.board):
+                        case 0:
+                            #on devoile le flop
+                            self.partie.board.tirerFlop()
+                            self.partie.board.afficherFlop()
+                        case 3:
+                            self.partie.board.tirerCarte()
+                            self.partie.board.afficherCarte()
+                        case 4:
+                            self.partie.board.tirerCarte()
+                            self.partie.board.afficherCarte()
+                        case _:
+                            self.setMain()
+                            DeterminerGagnant(self.partie)
+                else :
+                    self.entryMiseEnJeu.delete(0, "end")
+                    self.labelSoldeVariable.configure(text="{}".format(self.solde))
+                    self.labelMEJVariable.configure(text="{}".format(self.MEJ))
+                    self.partie.labelMiseEnJeuVariable.configure(text="{}".format(self.partie.MEJ))
+                    self.entryMiseEnJeu.configure(border_color="grey", text_color="white")
+                    self.setMain() #on desactive sa main
+                
+                    self.partie.changerMain() #on passe au joueur suivant
             #sinon erreur le montant doit être compris entre 1 et la MEJ du joueur precedent (inclus) 
             else:
                 self.entryMiseEnJeu.configure(border_color="red", text_color="red")
@@ -224,46 +242,45 @@ class Joueur():
         
     
     def check(self):
-        #si c'est la big blind qui check et que aucune carte n'a été dévoilée
-        if self.partie.bigBlind == self.numero and len(self.partie.board.board)==0: 
-            #on devoile le flop
-            self.partie.board.tirerFlop()
-            self.partie.board.afficherFlop()
-            
-            self.setMain()
+        
+        self.CheckStatut = True
+        
+        #si tout les joueurs ont check ou si c'est la big blinde qui a check au pre Flop
+        if all(joueur.getCheckStatut()==True for joueur in self.partie.liste_joueurs) or len(self.partie.board.board)==0 and self.partie.bigBlind == self.numero:
+            #devoiler carte(s) sur le board en fonction du nombres de cartes déjà devoilées
+            match len(self.partie.board.board):
+                case 0:
+                    #on devoile le flop
+                    self.partie.board.tirerFlop()
+                    self.partie.board.afficherFlop()
+                case 3:
+                    self.partie.board.tirerCarte()
+                    self.partie.board.afficherCarte()
+                case 4:
+                    self.partie.board.tirerCarte()
+                    self.partie.board.afficherCarte()
+                case _:
+                    self.setMain()
+                    DeterminerGagnant(self.partie)
+                   
+            self.setMain() #enlever la main du joueur actuel
+                           
+            #dès qu'une carte ou le flop a été devoilé on donne la main à la small
             self.partie.main = self.partie.smallBlind
             self.partie.liste_joueurs[self.partie.main].setMain()
-            
-        else:
-            self.CheckStatut = True
-            #on verifie si tout le monde a check
-            if False in [joueur.getCheckStatut() for joueur in self.partie.liste_joueurs]:
-                #tout le monde n'a pas check on passe au joueur suivant
-                self.btnCheckJ.configure(fg_color="darkorange")
-                self.setMain() 
-                self.partie.changerMain()
-                self.partie.update()
-            else:
-                #devoiler carte(s) sur le board
-                match len(self.partie.board.board):
-                    case 3:
-                        self.partie.board.tirerCarte()
-                        self.partie.board.afficherCarte()
-                    case 4:
-                        self.partie.board.tirerCarte()
-                        self.partie.board.afficherCarte()
-                    case _:
-                        exit #fin de manche à faire
-                
-                #donner la main à la smallBlinde
-                self.setMain()
-                self.partie.main = self.partie.smallBlind
-                self.partie.liste_joueurs[self.partie.main].setMain()
-                
-                #on reinitialise le bouton check de tous les joueurs
-                for joueur in self.partie.liste_joueurs:
-                    joueur.btnCheckJ.configure(fg_color="#FDB470")
+            self.partie.update()
                     
+            #on reinitialise le bouton check de tous les joueurs
+            for joueur in self.partie.liste_joueurs:
+                joueur.CheckStatut == False
+                joueur.btnCheckJ.configure(fg_color="#FDB470")
+
+        #sinon (donc si une personne n'a pas check)
+        else:
+            self.btnCheckJ.configure(fg_color="darkorange")
+            self.setMain() 
+            self.partie.changerMain()
+                        
         self.partie.update()
                     
                 
