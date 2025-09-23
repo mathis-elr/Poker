@@ -103,8 +103,11 @@ class Joueur():
             self.entryMiseEnJeu.configure(state="normal", placeholder_text="mise")
             
             #si le jour precedent a check ou que je suis la small blinde et qu'avec le joueur precedent on à la même MEJ
-            if self.partie.liste_joueurs[(self.numero - 1)%len(self.partie.liste_joueurs)].check \
-            or self.partie.smallBlinde == self.numero and self.partie.liste_joueurs[(self.numero - 1)%len(self.partie.liste_joueurs)].MEJ == self.MEJ:
+            #if self.partie.liste_joueurs[(self.numero - 1)%len(self.partie.liste_joueurs)].check \
+            #or self.partie.smallBlinde == self.numero and self.partie.liste_joueurs[(self.numero - 1)%len(self.partie.liste_joueurs)].MEJ == self.MEJ:
+            
+            #si ma mise est égale à la mise de tout les autres joueurs et dcp je pense que ya pas besoin de ça → (ou que le joueur precedent a check ou que je suis la small blinde et qu'avec le joueur precedent on à la même MEJ)
+            if None: 
                 self.btnCheckJ.configure(state="normal")
             #sinon le bouton reste desactivé
             
@@ -222,10 +225,10 @@ class Joueur():
     
     def check(self):
         #si c'est la big blind qui check et que aucune carte n'a été dévoilée
-        if self.partie.bigBlind == self.numero and len(self.partie.flop.board)==0: 
+        if self.partie.bigBlind == self.numero and len(self.partie.board.board)==0: 
             #on devoile le flop
-            self.partie.flop.tirerFlop()
-            self.partie.flop.afficherFlop()
+            self.partie.board.tirerFlop()
+            self.partie.board.afficherFlop()
             
             self.setMain()
             self.partie.main = self.partie.smallBlind
@@ -242,15 +245,15 @@ class Joueur():
                 self.partie.update()
             else:
                 #devoiler carte(s) sur le board
-                match len(self.partie.flop.board):
+                match len(self.partie.board.board):
                     case 3:
-                        self.partie.flop.tirerCarte()
-                        self.partie.flop.afficherCarte(self.partie.frameCarte4)
+                        self.partie.board.tirerCarte()
+                        self.partie.board.afficherCarte()
                     case 4:
-                        self.partie.flop.tirerCarte()
-                        self.partie.flop.afficherCarte(self.partie.frameCarte5)
+                        self.partie.board.tirerCarte()
+                        self.partie.board.afficherCarte()
                     case _:
-                        exit
+                        exit #fin de manche à faire
                 
                 #donner la main à la smallBlinde
                 self.setMain()

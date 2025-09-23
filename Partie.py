@@ -12,7 +12,7 @@ class Partie(CTk):
         set_appearance_mode("dark")
 
         self.paquet = PaquetCartes(self) #type : PaquetCartes
-        self.flop = Board(self,self.paquet) #type : Flop
+        self.board = Board(self,self.paquet) #type : Flop
         self.liste_joueurs = [Joueur(joueurs[i],i,self) for i in range (len(joueurs))] #liste des joueurs de type Joueur(nom,numero,partie)
         self.MEJ = 0
         
@@ -21,16 +21,19 @@ class Partie(CTk):
         #crée un frame pour chaque joueur  
         self.creeFrames(posX,posY)     
         
-        self.donnerLesMains() #donne deux cartes à chaque jour, type : Carte
+        self.donnerLesMains() #donne deux cartes à chaque joueur, type : Carte
         
-        self.main = self.setMainDepart() #personne qui doit jouer, type : int (numero du joueur)
-        self.bigBlind = self.liste_joueurs[(self.main-1)%len(self.liste_joueurs)].numero #joueur qui précède le joueur actuel avec module pour que precedent de 0 → dernier elmt de la liste, type : int (numero du joueur)
-        self.smallBlind = self.main # = joueur qui commence, type : int (numero du joueur)
+        self.dealer = random.choice(self.liste_joueurs).numero #chosis un joueur au hasard pour être le dealer, type : int (numero du joueur)
+        self.smallBlind = self.liste_joueurs[(self.dealer+1)%len(self.liste_joueurs)].numero # = joueur à gauche du dealer, type : int (numero du joueur)
+        self.bigBlind = self.liste_joueurs[(self.smallBlind+1)%len(self.liste_joueurs)].numero #joueur qui précède le dealer (avec modulo pour que precedent de 0 → dernier elmt de la liste), type : int (numero du joueur)
+        self.setMainPreFlop() # personne qui doit commencer (à gauche de la big blinde), type : int (numero du joueur)
+
+        
         
         '''
         INITIALISATION DES MISES DE DEPART
         '''
-        self.liste_joueurs[self.bigBlind].MEJ = 500
+        self.liste_joueurs[self.bigBlind].MEJ += 500
         self.liste_joueurs[self.bigBlind].solde-=500
     
         self.liste_joueurs[self.smallBlind].MEJ = 250
@@ -86,19 +89,7 @@ class Partie(CTk):
         labelInfo.grid(row=1,column=1,padx=20,pady=20) 
         ''' 
 
-
-        '''
-        PLATEAU DE JEU
-        '''
-        #frame représentant le plateau de jeu (apparissions des cartes)
-        frameCartes = CTkFrame(self, width=900, height=250,fg_color="green",border_color="red",border_width=5,corner_radius=60)
-        frameCartes.grid(row=2,column=1,columnspan=3,padx=10,pady=10)
-        
-        self.frameCarte1= CTkFrame(frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
-        self.frameCarte2 = CTkFrame(frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
-        self.frameCarte3= CTkFrame(frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
-        self.frameCarte4 = CTkFrame(frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
-        self.frameCarte5 = CTkFrame(frameCartes, fg_color="white",width=140,height=195,corner_radius=20)  
+        self.board.frameCartes.grid(row=2,column=1,columnspan=3,padx=10,pady=10)
         
             
     #--------
@@ -119,15 +110,18 @@ class Partie(CTk):
         for joueur in self.liste_joueurs:
             joueur.donner_main(self.paquet)
             
-    def setMainDepart(self):
-        numero_joueur = random.choice(self.liste_joueurs).numero #chosis un joueur au hasard pour commencer, type : int (numero du joueur)
-        self.liste_joueurs[numero_joueur].setMain() #on modifie la main du joueur qui commence
-        return numero_joueur
+    def setMainPreFlop(self):
+        self.main = self.liste_joueurs[(self.bigBlind+1)%len(self.liste_joueurs)].numero #le joueur à gauche de la bigblinde commence, type : int (numero du joueur)
+        self.liste_joueurs[self.main].setMain() #on modifie la main du joueur qui commence
         
     def creeFrames(self,posX,posY):
         for i in range(len(self.liste_joueurs)):
             self.liste_joueurs[i].faireApparaitreFrame(posX[i],posY[i]) 
-            
+    
+    def setMainPostFlop(self):
+        self.main = self.smallBlind #on donne tjs la main à la smallbinde après qu'une carte est été devoilé
+        self.liste_joueurs[self.main].setMain()
+        
     def changerMain(self):
         self.main = self.liste_joueurs[(self.main+1)%len(self.liste_joueurs)].numero #on passe la main au joueur suivant avec modulo pour que le suivant du dernier joueur soit le premier, type : int
         self.liste_joueurs[self.main].setMain()
