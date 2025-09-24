@@ -23,6 +23,13 @@ class Manche():
         self.bigBlind = self.liste_joueurs[(self.smallBlind+1)%len(self.liste_joueurs)].numero #joueur qui précède le dealer (avec modulo pour que precedent de 0 → dernier elmt de la liste), type : int (numero du joueur)  
         
         
+        self.labelDealer = CTkLabel(self.liste_joueurs[self.dealer].frame, font=("Arial",15,"bold"), text_color="black", text="D")
+        self.labelSmallBlind = CTkLabel(self.liste_joueurs[self.smallBlind].frame, font=("Arial",15,"bold"), text_color="black", text="SB")
+        self.labelBigBlind = CTkLabel(self.liste_joueurs[self.bigBlind].frame, font=("Arial",15,"bold"), text_color="black", text="BB")
+        self.labelDealer.grid(row=1,column=3,sticky="e", padx=20)
+        self.labelSmallBlind.grid(row=1,column=3,sticky="e", padx=20)
+        self.labelBigBlind.grid(row=1,column=3,sticky="e", padx=20)
+        
         '''
         INITIALISATION DES MISES DE DEPART
         '''
