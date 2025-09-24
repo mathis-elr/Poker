@@ -6,6 +6,7 @@ appdefinirJoueurs = DefinirJoueurs()
 appdefinirJoueurs.mainloop()
     
 if appdefinirJoueurs.noms_joueurs:
-    applicationPartie = Partie(appdefinirJoueurs.noms_joueurs)
-    applicationPartie.mainloop()
+    poker = CTk()
+    Partie(poker,appdefinirJoueurs.noms_joueurs)
+    poker.mainloop()
   

@@ -3,8 +3,7 @@ from customtkinter import *
 
 
 class Carte():
-    def __init__(self,couleur,valeur,partie):
-        self.partie = partie
+    def __init__(self,couleur,valeur):
         self.couleur = couleur
         self.valeur = valeur
         
