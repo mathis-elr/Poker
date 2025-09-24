@@ -22,11 +22,8 @@ class Partie(CTk):
         self.donnerLesMains() #donne deux cartes à chaque joueur, type : Carte
         
         self.dealer = random.choice(self.liste_joueurs).numero #chosis un joueur au hasard pour être le dealer, type : int (numero du joueur)
-        print(self.dealer)
         self.smallBlind = self.liste_joueurs[(self.dealer+1)%len(self.liste_joueurs)].numero # = joueur à gauche du dealer, type : int (numero du joueur)
-        print(self.smallBlind)
         self.bigBlind = self.liste_joueurs[(self.smallBlind+1)%len(self.liste_joueurs)].numero #joueur qui précède le dealer (avec modulo pour que precedent de 0 → dernier elmt de la liste), type : int (numero du joueur)  
-        print(self.bigBlind)
         
         '''
         INITIALISATION DES MISES DE DEPART
@@ -91,16 +88,6 @@ class Partie(CTk):
         labelInfo = CTkLabel(frameInfo, text="", font=("Times New Roman",40),text_color="black")
         labelInfo.grid(row=1,column=1,padx=20,pady=20) 
         ''' 
-        
-            
-    #--------
-    # getters
-    #--------    
-    def getMEJ(self):
-        return self.MEJ
-    
-    def getListeJoueurs(self):
-        return self.liste_joueurs
     
     
     #--------
@@ -124,9 +111,7 @@ class Partie(CTk):
         self.liste_joueurs[self.main].setMain()
         
     def changerMain(self):
-        print(self.main)
         self.main = self.liste_joueurs[(self.main+1)%len(self.liste_joueurs)].numero #on passe la main au joueur suivant avec modulo pour que le suivant du dernier joueur soit le premier, type : int
-        print(self.main)
         self.liste_joueurs[self.main].setMain()
     
     #--------

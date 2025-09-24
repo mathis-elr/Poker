@@ -199,48 +199,58 @@ class Joueur():
     
     
     def mise(self):
-        montant = int(self.entryMiseEnJeu.get()) #on recupère le montant
-        if montant < self.solde and montant > 0: 
-            if (montant+self.MEJ) >= self.partie.liste_joueurs[(self.numero - 1)%len(self.partie.liste_joueurs)].MEJ: # le joueur doit s'aligner avec la mise du joueur précedent (on utilise modulo pour le joueur precedent, ainsi precedent de 0 → dernier elmt de la liste)
-                self.solde-=montant
-                self.MEJ+=montant
-                self.partie.MEJ+=montant
-                
-                if all(joueur.MEJ==self.MEJ for joueur in self.partie.liste_joueurs): #PROBLEME si la big a surencheri le flop DOIT s'afficher dès que tout le monde a mise egale mais c'est pas le cas
-                    match len(self.partie.board.board):
-                        case 0:
-                            #on devoile le flop
-                            self.partie.board.tirerFlop()
-                            self.partie.board.afficherFlop()
-                        case 3:
-                            self.partie.board.tirerCarte()
-                            self.partie.board.afficherCarte()
-                        case 4:
-                            self.partie.board.tirerCarte()
-                            self.partie.board.afficherCarte()
-                        case _:
-                            self.setMain()
-                            DeterminerGagnant(self.partie)
-                else :
-                    self.entryMiseEnJeu.delete(0, "end")
-                    self.labelSoldeVariable.configure(text="{}".format(self.solde))
-                    self.labelMEJVariable.configure(text="{}".format(self.MEJ))
-                    self.partie.labelMiseEnJeuVariable.configure(text="{}".format(self.partie.MEJ))
-                    self.entryMiseEnJeu.configure(border_color="grey", text_color="white")
-                    self.setMain() #on desactive sa main
-                
-                    self.partie.changerMain() #on passe au joueur suivant
-            #sinon erreur le montant doit être compris entre 1 et la MEJ du joueur precedent (inclus) 
-            else:
-                self.entryMiseEnJeu.configure(border_color="red", text_color="red")
-            
-        #sinon erreur montant ne peut être supérieur au solde    
-        else:
-            self.entryMiseEnJeu.configure(border_color="red", text_color="red")
-            
-        self.partie.update()
+        montant = int(self.entryMiseEnJeu.get()) #on recupère le montant que self souhaite miser
         
-    
+        #cas ou le montant entrée est incorrecte
+        if not (0 < montant < self.solde):
+            self.entryMiseEnJeu.configure(border_color="red", text_color="red")
+            return #on sort de la fonction
+        
+        #cas ou le joueur n'aligne pas sa MEJ avec celle du joueur precedent
+        if (montant+self.MEJ) < self.partie.liste_joueurs[(self.numero - 1)%len(self.partie.liste_joueurs)].MEJ:
+            self.entryMiseEnJeu.configure(border_color="red", text_color="red")
+            return #on sort de la fonction
+        
+        #maj solde en fonction du montant  
+        self.solde-=montant
+        self.MEJ+=montant
+        self.partie.MEJ+=montant
+                
+        #cas pre flop
+        if len(self.partie.board.board)==0:
+                    
+            #cas ou tout le monde c'est aligné sur une surenchère de la mise de depart de la grosse blinde
+            if all(joueur.MEJ==self.MEJ for joueur in self.partie.liste_joueurs) and self.MEJ!=500:
+                #on devoile le flop
+                self.partie.board.tirerFlop()
+                self.partie.board.afficherFlop()
+                
+                self.mainPostflop_et_MAJ()  
+                    
+            #cas ou tous le monde ne c'est pas encore aligné
+            else:                               
+                self.MAJ_et_joueurSuivant()
+                           
+        #cas post flop
+        else:
+        
+            #cas ou tous les joueurs ont mis la même mise
+            if all(joueur.MEJ==self.MEJ for joueur in self.partie.liste_joueurs):
+                match len(self.partie.board.board):
+                    case 3 | 4:
+                        self.partie.board.tirerCarte()
+                        self.partie.board.afficherCarte()
+                    case _:
+                        self.setMain()
+                        DeterminerGagnant(self.partie)
+                        
+                self.mainPostflop()        
+                                
+            #cas ou tous le monde n'a pas encore mis la meme mise
+            else:
+                self.MAJ_et_joueurSuivant()            
+        
+        
     def check(self):
         
         self.CheckStatut = True
@@ -253,22 +263,14 @@ class Joueur():
                     #on devoile le flop
                     self.partie.board.tirerFlop()
                     self.partie.board.afficherFlop()
-                case 3:
-                    self.partie.board.tirerCarte()
-                    self.partie.board.afficherCarte()
-                case 4:
+                case 3 | 4:
                     self.partie.board.tirerCarte()
                     self.partie.board.afficherCarte()
                 case _:
                     self.setMain()
                     DeterminerGagnant(self.partie)
                    
-            self.setMain() #enlever la main du joueur actuel
-                           
-            #dès qu'une carte ou le flop a été devoilé on donne la main à la small
-            self.partie.main = self.partie.smallBlind
-            self.partie.liste_joueurs[self.partie.main].setMain()
-            self.partie.update()
+            self.mainPostflop()  
                     
             #on reinitialise le bouton check de tous les joueurs
             for joueur in self.partie.liste_joueurs:
@@ -282,7 +284,37 @@ class Joueur():
             self.partie.changerMain()
                         
         self.partie.update()
+        
+        
+    def MAJ_et_joueurSuivant(self):
+        '''
+        mise a jour des labels variables (solde/MEJ joueur/MEJ principal)
+        +
+        retire la main du joueur actuelle et passe au joueur suivant
+        '''
+        self.entryMiseEnJeu.delete(0, "end")
+        self.labelSoldeVariable.configure(text="{}".format(self.solde))
+        self.labelMEJVariable.configure(text="{}".format(self.MEJ))
+        self.partie.labelMiseEnJeuVariable.configure(text="{}".format(self.partie.MEJ))
+        self.entryMiseEnJeu.configure(border_color="grey", text_color="white")
+        
+        self.setMain() #on desactive sa main         
+        self.partie.changerMain() #on passe au joueur suivant
+        
+        self.partie.update()
+        
+    
+    def mainPostflop(self):
+        '''
+        au postflop la main va tjs a la smallBlind (dès qu'une carte supplementaire a été retourné)
+        '''
+        self.setMain() #enlever la main du joueur actuel
+        self.partie.main = self.partie.smallBlind
+        self.partie.liste_joueurs[self.partie.main].setMain() 
+        
+        self.partie.update()
                     
                 
     def seCoucher(self):
         pass
+    
