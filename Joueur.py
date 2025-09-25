@@ -259,7 +259,7 @@ class Joueur():
         self.CheckStatut = True
         
         #si tout les joueurs ont check ou si c'est la big blinde qui a check au pre Flop
-        if all(joueur.CheckStatut==True for joueur in self.partie.manche.liste_joueurs) or len(self.partie.manche.board.board)==0 and self.partie.manche.bigBlind == self.numero:
+        if all(joueur.CheckStatut==True for joueur in self.partie.manche.liste_joueurs) or len(self.partie.manche.board.board)==0 and self.partie.manche.bigBlind.numero == self.numero:
             #devoiler carte(s) sur le board en fonction du nombres de cartes déjà devoilées
             match len(self.partie.manche.board.board):
                 case 0:
@@ -322,6 +322,17 @@ class Joueur():
         self.mise(self.solde)
        
      
-
+    def seCoucher(self):
+        '''
+        on me retire de la liste des joueurs de la manche ainsi que que de la liste ephemere si je suis pas le dealer
+        '''
+        if self.numero != self.partie.manche.dealer.numero:
+            self.partie.manche.liste_joueurs_ephemere.remove(self)
+            
+        self.partie.manche.liste_joueurs.remove(self)
+        self.partie.manche.MAJDesRoles()
+        self.frame.configure(fg_color="")
+        self.partie.manche.joueurSuivant()
+        
     
     
