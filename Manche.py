@@ -18,17 +18,24 @@ class Manche():
         
         self.donnerLesMains() #donne deux cartes à chaque joueur, type : Carte
         
+        '''
+        Initialisation des rôles
+        '''
         self.dealer = random.choice(self.liste_joueurs).numero #chosis un joueur au hasard pour être le dealer, type : int (numero du joueur)
         self.smallBlind = self.liste_joueurs[(self.dealer+1)%len(self.liste_joueurs)].numero # = joueur à gauche du dealer, type : int (numero du joueur)
         self.bigBlind = self.liste_joueurs[(self.smallBlind+1)%len(self.liste_joueurs)].numero #joueur qui précède le dealer (avec modulo pour que precedent de 0 → dernier elmt de la liste), type : int (numero du joueur)  
+         
+        self.liste_joueurs[self.dealer].label_badge.configure(text="D")
+        self.liste_joueurs[self.dealer].frameBadge.grid(row=1,column=2,padx=5,pady=5)
+        self.liste_joueurs[self.dealer].label_badge.grid(row=1,column=1,padx=5,pady=5)
         
+        self.liste_joueurs[self.smallBlind].label_badge.configure(text="SB")
+        self.liste_joueurs[self.smallBlind].frameBadge.grid(row=1,column=2,padx=5,pady=5)
+        self.liste_joueurs[self.smallBlind].label_badge.grid(row=1,column=1,padx=5,pady=5)
         
-        self.labelDealer = CTkLabel(self.liste_joueurs[self.dealer].frame, font=("Arial",15,"bold"), text_color="black", text="D")
-        self.labelSmallBlind = CTkLabel(self.liste_joueurs[self.smallBlind].frame, font=("Arial",15,"bold"), text_color="black", text="SB")
-        self.labelBigBlind = CTkLabel(self.liste_joueurs[self.bigBlind].frame, font=("Arial",15,"bold"), text_color="black", text="BB")
-        self.labelDealer.grid(row=1,column=3,sticky="e", padx=20)
-        self.labelSmallBlind.grid(row=1,column=3,sticky="e", padx=20)
-        self.labelBigBlind.grid(row=1,column=3,sticky="e", padx=20)
+        self.liste_joueurs[self.bigBlind].label_badge.configure(text="BB")
+        self.liste_joueurs[self.bigBlind].frameBadge.grid(row=1,column=2,padx=5,pady=5)
+        self.liste_joueurs[self.bigBlind].label_badge.grid(row=1,column=1,padx=5,pady=5)
         
         '''
         INITIALISATION DES MISES DE DEPART
@@ -44,7 +51,9 @@ class Manche():
         self.liste_joueurs[self.smallBlind].labelSoldeVariable.configure(text="{}".format(self.liste_joueurs[self.smallBlind].solde))
         self.liste_joueurs[self.smallBlind].labelMEJVariable.configure(text="{}".format(self.liste_joueurs[self.smallBlind].MEJ))
         
-        
+        self.interface.update()
+
+  
     #--------
     # methodes
     #-------- 

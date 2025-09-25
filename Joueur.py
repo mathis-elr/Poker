@@ -16,6 +16,7 @@ class Joueur():
         self.partie = partie
         self.interface = interface
         
+        #frame contenant toutes les infos du joueur
         self.frame = CTkFrame(self.interface, fg_color="white",corner_radius=15)
         
         '''
@@ -24,50 +25,51 @@ class Joueur():
         self.label_nomJoueur = CTkLabel(self.frame, text="{}".format(self.nom), font=("Arial",15,"bold"), text_color="black")
         
         '''
+        BADGE
+        '''
+        self.frameBadge = CTkFrame(self.frame, width=30, height=30, corner_radius=15, fg_color="blue")
+        self.label_badge = CTkLabel(self.frameBadge, font=("Arial",15,"bold"), text_color="white")
+        
+        '''
         CARTES PHYSIQUE CLIQUABLES
         '''
         #frame pour que le joueur voit ses cartes
         self.frameVoirCarte1 = CTkFrame(self.frame,fg_color="#222222",border_color="red",border_width=2,corner_radius=10,width=70,height=99)
         self.frameVoirCarte2 = CTkFrame(self.frame,fg_color="#222222",border_color="red",border_width=2,corner_radius=10,width=70,height=99)
+        
+        # cliquer sur les cartes pour voir le contenu
         self.frameVoirCarte1.bind("<Button-1>",self.voirCarte1)
         self.frameVoirCarte2.bind("<Button-1>",self.voirCarte2)
         
 
         '''
-        SOLDE/MEJ/BOUTONS
+        SOLDE/MEJ
         '''
-        self.frameAutre = CTkFrame(self.frame, fg_color="white")
-        self.frameSoldeMEJ = CTkFrame(self.frameAutre, fg_color="white")
-        #frame pour visualiser le solde
-        self.frameSolde = CTkFrame(self.frameSoldeMEJ,fg_color="yellow",corner_radius=10)
-        #label simple pour exprimer le solde
-        self.labelSolde = CTkLabel(self.frameSolde, text="Solde :", font=("Arial",12,"bold"),text_color="black")
-        #label contenant le solde (variable)
-        self.labelSoldeVariable = CTkLabel(self.frameSolde, text="{} $".format(self.solde), font=("Arial",12,"bold"),text_color="black")
-
-        #frame pour visualiser la somme mise en jeu par le joueur
-        self.frameMEJ = CTkFrame(self.frameSoldeMEJ,fg_color="yellow",corner_radius=10)
-        #label simple pour exprimer la mise en jeu
-        self.labelMEJ = CTkLabel(self.frameMEJ, text="Mise en jeu :", font=("Arial",12,"bold"),text_color="black")
-        #label contenant la mise en jeu (variable)
-        self.labelMEJVariable = CTkLabel(self.frameMEJ, text="{} $".format(self.MEJ), font=("Arial",12,"bold"),text_color="black")
-
-        self.frameBoutons = CTkFrame(self.frameAutre, fg_color="white")
-        self.btnCheckJ = CTkButton(self.frameBoutons, text="check",text_color='black', fg_color="#FDB470",hover_color='darkorange',corner_radius=50,width=100, command=self.check,state="disabled")
-        self.btnSeCoucher = CTkButton(self.frameBoutons, text="se coucher",text_color='white', fg_color="#6B7AFF",hover_color='darkblue',corner_radius=50, width=100,command=self.seCoucher,state="disabled")
-
-        '''
-        MISER
-        '''
-        #frame pour miser 
-        self.frameMiser = CTkFrame(self.frame,fg_color="black",border_color="black",border_width=5,corner_radius=10)
-        #entrée pour la mise en jeu souhaité
-        self.entryMiseEnJeu = CTkEntry(self.frameMiser, state="disabled")
-        #bouton pour valider la mise en jeu
-        self.btnMiser = CTkButton(self.frameMiser, text="Miser",text_color='black', fg_color='white',hover_color='lightgrey',command=self.mise,state="disabled")
-        #bouton pour allin
-        self.btnAllIn = CTkButton(self.frameMiser, text="All In",text_color='black', fg_color='white',hover_color='red',command= self.allIn,state="disabled")
+        self.frameSoldeMEJ = CTkFrame(self.frame, fg_color="white")
         
+        #frame concernant le solde
+        self.frameSolde = CTkFrame(self.frameSoldeMEJ,fg_color="gold",corner_radius=10)
+        self.labelSolde = CTkLabel(self.frameSolde, text="Solde ", font=("Arial",12,"bold"),text_color="black")
+        self.labelSoldeVariable = CTkLabel(self.frameSolde, text="{} $".format(self.solde), font=("Arial",13),text_color="black")
+
+        #frame concernant la somme mise en jeu par le joueur dans cette manche
+        self.frameMEJ = CTkFrame(self.frameSoldeMEJ,fg_color="gold",corner_radius=10)
+        self.labelMEJ = CTkLabel(self.frameMEJ, text="Mise en jeu ", font=("Arial",12,"bold"),text_color="black")
+        self.labelMEJVariable = CTkLabel(self.frameMEJ, text="{} $".format(self.MEJ), font=("Arial",13),text_color="black")
+
+        '''
+        MISER/BOUTONS
+        '''
+        self.frameMiserBoutons = CTkFrame(self.frame, fg_color="green", border_color="red",border_width=2,corner_radius=10)
+        
+        self.entryMiseEnJeu = CTkEntry(self.frameMiserBoutons, fg_color='grey', border_color="#221C1C",state="disabled")
+        self.btnMiser = CTkButton(self.frameMiserBoutons, command=self.mise, text="miser", text_color='white', font=("Arial",16,"bold"), fg_color='red', hover_color='darkred', corner_radius=10, state="disabled")
+        
+        self.btnSuivre = CTkButton(self.frameMiserBoutons, command= self.suivre, text="s'aligner",text_color='white', font=("Arial",16,"bold"), fg_color='red',hover_color='darkred', corner_radius=10, state="disabled")
+        self.btnAllIn = CTkButton(self.frameMiserBoutons, command= self.allIn, text="all In",text_color='white', font=("Arial",16,"bold"), fg_color='red',hover_color='darkred', corner_radius=10, state="disabled")
+        self.btnCheckJ = CTkButton(self.frameMiserBoutons, command=self.check, text="check",text_color='black', font=("Arial",16,"bold"), fg_color="#FDB470",hover_color='darkorange',corner_radius=20, state="disabled")
+        self.btnSeCoucher = CTkButton(self.frameMiserBoutons, command=self.seCoucher, text="se coucher",text_color='black', font=("Arial",16,"bold"), fg_color="#FDB470",hover_color='darkorange',corner_radius=20, state="disabled")
+
         
     #--------
     #setters
@@ -91,14 +93,17 @@ class Joueur():
         if self.main:
             self.main = False
             self.frame.configure(fg_color="white")
+            self.frameSoldeMEJ.configure(fg_color="white")
             self.btnAllIn.configure(state="disabled")
             self.btnCheckJ.configure(state="disabled")
             self.btnMiser.configure(state="disabled")
             self.btnSeCoucher.configure(state="disabled")
+            self.btnSuivre.configure(state="disabled")
             self.entryMiseEnJeu.configure(state="disabled")
         else:
             self.main = True
-            self.frame.configure(fg_color="#5CB5FF")
+            self.frame.configure(fg_color="#87D3FF")
+            self.frameSoldeMEJ.configure(fg_color="#87D3FF")
             self.btnAllIn.configure(state="normal")
             self.btnMiser.configure(state="normal")
             self.btnSeCoucher.configure(state="normal")
@@ -108,6 +113,10 @@ class Joueur():
             if all(self.MEJ == joueur.MEJ for joueur in self.partie.manche.liste_joueurs): 
                 self.btnCheckJ.configure(state="normal")
             #sinon le bouton reste desactivé
+            
+            #si la mise de tout les joueur n'est pas égale
+            if any(self.MEJ != joueur.MEJ for joueur in self.partie.manche.liste_joueurs):
+                self.btnSuivre.configure(state="normal")
             
         self.interface.update()
       
@@ -124,15 +133,9 @@ class Joueur():
         self.frame.grid(row=posX[self.numero],column=posY[self.numero],padx=20,pady=20)
         
         #ligne 1
-        self.label_nomJoueur.grid(row=1,column=1,columnspan=2,padx=5,pady=5)
+        self.label_nomJoueur.grid(row=1,column=1,padx=5,pady=5)
         
-        #ligne 2
-        self.frameVoirCarte1.grid(row=2,column=1,padx=10,pady=10)
-        self.frameVoirCarte2.grid(row=2,column=2,padx=10,pady=10)
-
-        self.frameAutre.grid(row=2,column=3,padx=10,pady=10)
-        
-        self.frameSoldeMEJ.grid(row=1,column=1,padx=10,pady=10)
+        self.frameSoldeMEJ.grid(row=1,column=3,padx=10,pady=10)
         self.frameSolde.grid(row=3,column=1,padx=5,pady=1,sticky="w")
         self.labelSolde.grid(row=1,column=1,padx=10,pady=10)
         self.labelSoldeVariable.grid(row=1,column=2,padx=10,pady=10)
@@ -140,15 +143,20 @@ class Joueur():
         self.labelMEJ.grid(row=1,column=1,padx=10,pady=10)
         self.labelMEJVariable.grid(row=1,column=2,padx=10,pady=10)
         
-        self.frameBoutons.grid(row=2,column=1)
-        self.btnCheckJ.grid(row=1,column=1,padx=10,pady=10)
-        self.btnSeCoucher.grid(row=1,column=2,padx=10,pady=10)
+        #ligne 2
+        self.frameVoirCarte1.grid(row=2,column=1,padx=10,pady=10)
+        self.frameVoirCarte2.grid(row=2,column=2,padx=10,pady=10)
         
-        #ligne 3
-        self.frameMiser.grid(row=3,column=1,columnspan=3,padx=5,pady=5)
-        self.entryMiseEnJeu.grid(row=2,column=1,padx=10,pady=10)
-        self.btnMiser.grid(row=2,column=2,padx=10,pady=10)
-        self.btnAllIn.grid(row=2,column=3,padx=10,pady=10)
+        self.frameMiserBoutons.grid(row=2,column=3,padx=10,pady=10)
+        self.entryMiseEnJeu.grid(row=1,column=1,padx=10,pady=10)
+        self.btnMiser.grid(row=1,column=2,padx=10,pady=10)
+        
+        self.btnCheckJ.grid(row=2,column=1,padx=10,pady=10)
+        self.btnSuivre.grid(row=2,column=2,padx=10,pady=10)
+        self.btnSeCoucher.grid(row=3,column=1,padx=10,pady=10)
+        self.btnAllIn.grid(row=3,column=2,padx=10,pady=10)
+
+
         
         
     def voirCarte1(self,event):
@@ -162,10 +170,6 @@ class Joueur():
         self.interface.update()
         self.interface.after(3000,lambda:self.cartes[1].cacherCartePhysiqueJoueur(self.frameVoirCarte2))
         
-        
-    def allIn(self):
-        pass 
-    
     
     def mise(self):
         montant = int(self.entryMiseEnJeu.get()) #on recupère le montant que self souhaite miser
@@ -194,7 +198,7 @@ class Joueur():
                 self.partie.manche.board.tirerFlop()
                 self.partie.manche.board.afficherFlop()
                 
-                self.mainPostflop_et_MAJ()  
+                self.donnerMainPostflop()  
                     
             #cas ou tous le monde ne c'est pas encore aligné
             else:                               
@@ -286,7 +290,13 @@ class Joueur():
         
         self.interface.update()
                     
-                
+
+    def allIn(self):
+        pass 
+    
+    def suivre(self):
+        pass       
+     
     def seCoucher(self):
         pass
     

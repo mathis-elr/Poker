@@ -36,16 +36,13 @@ class Partie():
         INFOS JOUEURS
         '''
         #frame pour les infos communes aux joueurs
-        frameMiseEnJeu = CTkFrame(frameInfoGenerales, width=200, height=100,fg_color="green",border_color="white",border_width=3,corner_radius=20)
-        frameMiseEnJeu.grid(row=2,column=1,padx=5,pady=10,sticky="s")
+        frameMiseEnJeu = CTkFrame(frameInfoGenerales, width=200, height=100,fg_color="green",border_color="red",border_width=3,corner_radius=20)
+        frameMiseEnJeu.grid(row=2,column=1,padx=10,pady=10,sticky="s")
 
-        frameLabelMEJ = CTkFrame(frameMiseEnJeu,fg_color="black",corner_radius=10)
-        frameLabelMEJ.grid(row=1,column=1,padx=10,pady=10)
+        labelMiseEnJeu = CTkLabel(frameMiseEnJeu, text="Mise En Jeu", font=("Arial",20,"bold"),text_color="gold")
+        labelMiseEnJeu.grid(row=1,column=1,padx=10,pady=10)
 
-        labelMiseEnJeu = CTkLabel(frameLabelMEJ, text="Mise En Jeu", font=("Arial",15),text_color="white")
-        labelMiseEnJeu.grid(row=2,column=1,padx=10,pady=10)
-
-        self.labelMiseEnJeuVariable = CTkLabel(frameMiseEnJeu, text="0 $", font=("Arial",20,"bold"),text_color="gold")
+        self.labelMiseEnJeuVariable = CTkLabel(frameMiseEnJeu, text="0 $", font=("Arial",20),text_color="gold")
         self.labelMiseEnJeuVariable.grid(row=2,column=1,padx=10,pady=10)
         
         
