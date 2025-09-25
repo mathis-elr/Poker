@@ -4,9 +4,8 @@ from DeterminerGagnant import DeterminerGagnant
 
 class Joueur():
     
-    def __init__(self,nom,numero,partie,interface):
+    def __init__(self,nom,partie,interface):
         self.nom = nom
-        self.numero = numero
         self.solde = 10000
         self.MEJ = 0
         self.CheckStatut = False
@@ -143,6 +142,7 @@ class Joueur():
             #si ma mise est égale à la mise de tout les autres joueurs, le check est possible
             if all(self.MEJ == joueur.MEJ for joueur in self.partie.manche.liste_joueurs): 
                 self.btnCheckJ.configure(state="normal")
+                self.btnSeCoucher.configure(state="disabled")
             #sinon le bouton reste desactivé
             
             #si la mise de tout les joueur n'est pas égale
@@ -158,7 +158,7 @@ class Joueur():
         posX = [1, 1, 3, 3]  # lignes
         posY = [1, 3, 3, 1]  # colonnes
         
-        self.frame.grid(row=posX[self.numero],column=posY[self.numero],padx=20,pady=20)
+        self.frame.grid(row=posX[self.partie.liste_joueurs.index(self)],column=posY[self.partie.liste_joueurs.index(self)],padx=20,pady=20)
         
         #ligne 1
         self.label_nomJoueur.grid(row=1,column=1,padx=5,pady=5)
@@ -208,7 +208,7 @@ class Joueur():
             return #on sort de la fonction
         
         #cas ou le joueur n'aligne pas sa MEJ avec celle du joueur precedent
-        if (montant+self.MEJ) < self.partie.manche.liste_joueurs[(self.numero - 1)%len(self.partie.manche.liste_joueurs)].MEJ:
+        if (montant+self.MEJ) < self.partie.manche.liste_joueurs[(self.partie.manche.liste_joueurs.index(self) - 1)%len(self.partie.manche.liste_joueurs)].MEJ:
             self.entryMiseEnJeu.configure(border_color="red", text_color="red")
             return #on sort de la fonction
         
@@ -259,7 +259,7 @@ class Joueur():
         self.CheckStatut = True
         
         #si tout les joueurs ont check ou si c'est la big blinde qui a check au pre Flop
-        if all(joueur.CheckStatut==True for joueur in self.partie.manche.liste_joueurs) or len(self.partie.manche.board.board)==0 and self.partie.manche.bigBlind.numero == self.numero:
+        if all(joueur.CheckStatut==True for joueur in self.partie.manche.liste_joueurs) or len(self.partie.manche.board.board)==0 and self.partie.manche.bigBlind == self:
             #devoiler carte(s) sur le board en fonction du nombres de cartes déjà devoilées
             match len(self.partie.manche.board.board):
                 case 0:
@@ -306,7 +306,7 @@ class Joueur():
         '''
         miser la même chose que le joueur precedent ou allIn si j'ai pas assez pour m'aligner
         '''
-        MEJ_joueur_precedent = self.partie.manche.liste_joueurs[(self.numero - 1)%len(self.partie.manche.liste_joueurs)].MEJ
+        MEJ_joueur_precedent = self.partie.manche.liste_joueurs[(self.partie.manche.liste_joueurs.index(self) - 1)%len(self.partie.manche.liste_joueurs)].MEJ
         #si mon solde + ma mise en jeu est supérieur ou egal à la mise en jeu du joueur precedent
         if self.solde + self.MEJ > MEJ_joueur_precedent:
             montant = MEJ_joueur_precedent - self.MEJ 
@@ -326,13 +326,24 @@ class Joueur():
         '''
         on me retire de la liste des joueurs de la manche ainsi que que de la liste ephemere si je suis pas le dealer
         '''
-        if self.numero != self.partie.manche.dealer.numero:
-            self.partie.manche.liste_joueurs_ephemere.remove(self)
+        #cas ou il ne reste que 2 joueurs (et que dcp comme cette fonction est appeller l'un deux se couche)
+        if len(self.partie.liste_joueurs) == 2:
+            #fin de manche il ne reste qu'un joueur qui gagne
+            self.partie.manche.liste_joueurs.remove(self)
+            self.setMain()
+            DeterminerGagnant(self.partie)
+        
+        #sinon on le supprime de la manche et on passe au joueur suivant
+        else:
+            self.partie.manche.joueurSuivant()
             
-        self.partie.manche.liste_joueurs.remove(self)
-        self.partie.manche.MAJDesRoles()
-        self.frame.configure(fg_color="")
-        self.partie.manche.joueurSuivant()
+            if self == self.partie.manche.dealer:
+                #on garde le dealer dans une liste (liste_joueurs_ephemere)pour pouvoir continuer a donner la main a gauche du dealer même si il c'est couché
+                self.partie.manche.liste_joueurs_ephemere.remove(self)
+            
+            self.partie.manche.liste_joueurs.remove(self)
+            self.frame.configure(fg_color="red")
+        
         
     
     

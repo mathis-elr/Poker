@@ -11,9 +11,8 @@ class Manche():
         self.partie = partie
         self.interface = interface
         
-        
-        self.liste_joueurs = [Joueur(joueurs[i],i,self.partie,self.interface) for i in range (len(joueurs))]
-        self.liste_joueurs_ephemere = self.liste_joueurs #pareil que liste joueurs mais quand le dealer se couche on ne l'enleve pas pour pouvoir tjs donner la main a la personne a la gauche du dealer
+        self.liste_joueurs = [Joueur(joueur,self.partie,self.interface) for joueur in joueurs]
+        self.liste_joueurs_ephemere = self.liste_joueurs.copy() #pareil que liste joueurs mais quand le dealer se couche on ne l'enleve pas pour pouvoir tjs donner la main a la personne a la gauche du dealer
         self.paquet = PaquetCartes() #type : PaquetCartes
         self.board = Board(self.partie,self.paquet) #type : Flop
         
@@ -23,12 +22,12 @@ class Manche():
         Initialisation des rôles
         '''
         self.dealer = random.choice(self.liste_joueurs)#chosis un joueur au hasard pour être le dealer, type : Joueur
-        self.smallBlind = self.liste_joueurs[(self.dealer.numero + 1)%len(self.liste_joueurs)]# = joueur à gauche du dealer, type : Joueur
-        self.bigBlind = self.liste_joueurs[(self.smallBlind.numero + 1)%len(self.liste_joueurs)] #joueur qui précède le dealer (avec modulo pour que precedent de 0 → dernier elmt de la liste), type : Joueur
+        self.smallBlind = self.liste_joueurs[(self.liste_joueurs.index(self.dealer) + 1)%len(self.liste_joueurs)]# = joueur à gauche du dealer, type : Joueur
+        self.bigBlind = self.liste_joueurs[(self.liste_joueurs.index(self.smallBlind) + 1)%len(self.liste_joueurs)] #joueur qui précède le dealer (avec modulo pour que precedent de 0 → dernier elmt de la liste), type : Joueur
          
         self.dealer.label_badge.configure(text="D")
         self.dealer.frameBadge.grid(row=1,column=2,padx=5,pady=5)
-        self.dealer.label_badge.grid(row=1,column=1,padx=5,pady=5)
+        self.dealer.label_badge.grid(row=1,column=1,padx=5,pady=15)
         
         self.smallBlind.label_badge.configure(text="SB")
         self.smallBlind.frameBadge.grid(row=1,column=2,padx=5,pady=5)
@@ -75,7 +74,7 @@ class Manche():
         au postflop la main va tjs au premier joueur actif a gauche du dealer(dès qu'une carte supplementaire a été retourné)
         ''' 
         self.main.setMain() #on desactive la main du joueur actuel
-        self.main = self.liste_joueurs[(self.liste_joueurs.index(self.dealer) + 1)%len(self.partie.liste_joueurs)]
+        self.main = self.liste_joueurs[(self.liste_joueurs_ephemere.index(self.dealer) + 1)%len(self.liste_joueurs_ephemere)]
         self.main.setMain() 
         
         
