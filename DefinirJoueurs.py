@@ -38,7 +38,7 @@ class DefinirJoueurs(CTk):
         '''
         Ajoute un champs pour un joueur en plus dans la partie (max 4 joueurs)
         '''
-        joueur = CTkEntry(self.frameJoueurs, placeholder_text="joueur {}".format(len(self.joueurs)+1), fg_color="#222222")
+        joueur = CTkEntry(self.frameJoueurs, placeholder_text="joueur {}".format(len(self.joueurs)+1), fg_color="#222222", placeholder_text_color='white')
         joueur.grid(row=len(self.joueurs)+1,column=1,padx=10,pady=10)
         self.joueurs.append(joueur)
         nb_joueurs = len(self.joueurs)

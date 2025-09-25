@@ -3,15 +3,14 @@ import random
 
 from PaquetCartes import PaquetCartes
 from Board import Board
-from Joueur import Joueur
 
 class Manche():
-    def __init__(self,joueurs,partie,interface):
+    def __init__(self,lesJoueurs,partie,interface):
         self.MEJ = 0
         self.partie = partie
         self.interface = interface
         
-        self.liste_joueurs = [Joueur(joueur,self.partie,self.interface) for joueur in joueurs]
+        self.liste_joueurs = lesJoueurs.copy()
         self.liste_joueurs_ephemere = self.liste_joueurs.copy() #pareil que liste joueurs mais quand le dealer se couche on ne l'enleve pas pour pouvoir tjs donner la main a la personne a la gauche du dealer
         self.paquet = PaquetCartes() #type : PaquetCartes
         self.board = Board(self.partie,self.paquet) #type : Flop
@@ -27,7 +26,7 @@ class Manche():
          
         self.dealer.label_badge.configure(text="D")
         self.dealer.frameBadge.grid(row=1,column=2,padx=5,pady=5)
-        self.dealer.label_badge.grid(row=1,column=1,padx=5,pady=15)
+        self.dealer.label_badge.grid(row=1,column=1,padx=5,pady=5)
         
         self.smallBlind.label_badge.configure(text="SB")
         self.smallBlind.frameBadge.grid(row=1,column=2,padx=5,pady=5)

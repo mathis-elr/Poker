@@ -13,6 +13,7 @@ class Partie():
         self.interface.title("♠️♣️ poker ♦️♥️")
         set_appearance_mode("dark")
 
+        self.noms_joueurs = joueurs
         
         '''
         FRAME INFOS GENERALES
@@ -64,9 +65,9 @@ class Partie():
         '''
         Creation de la première manche
         '''
-        self.manche = Manche(joueurs,self,interface)
-        self.manche.setMainPreFlop() #personne qui doit commencer (à gauche de la big blinde), type : int (numero du joueur)
-        self.liste_joueurs = self.manche.liste_joueurs
+        self.liste_joueurs = [Joueur(joueur,self,self.interface) for joueur in joueurs]
+        self.manche = Manche(self.liste_joueurs,self,interface)
+        self.manche.setMainPreFlop() #personne qui doit commencer (à gauche de la big blinde), type : Joueur
         
         self.creeFrames() #crée les joueurs dans l'interface
         
@@ -75,13 +76,25 @@ class Partie():
     # methodes
     #--------   
     def creeFrames(self):
+        '''
+        afficher les frames de chaque joueurs
+        '''
         for joueur in self.liste_joueurs:
             joueur.faireApparaitreFrame() 
             
     def nvlPartie(self):
-        pass
+        '''
+        on supprime la patie actuele t on en crée ue nouvelle
+        '''
+        for widget in self.interface.winfo_children():
+            widget.destroy()
+            
+        Partie(self.interface,self.noms_joueurs)
     
     def quitter(self):
+        '''
+        ferme l'application → detruit la fenetre
+        '''
         self.destroy()
         
         
