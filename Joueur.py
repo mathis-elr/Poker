@@ -50,12 +50,12 @@ class Joueur():
         #frame concernant le solde
         self.frameSolde = CTkFrame(self.frameSoldeMEJ,fg_color="gold",corner_radius=10)
         self.labelSolde = CTkLabel(self.frameSolde, text="Solde ", font=("Arial",12,"bold"),text_color="black")
-        self.labelSoldeVariable = CTkLabel(self.frameSolde, text="{}".format(self.solde), font=("Arial",13),text_color="black")
+        self.labelSoldeVariable = CTkLabel(self.frameSolde, text="{} $".format(self.solde), font=("Arial",13),text_color="black")
 
         #frame concernant la somme mise en jeu par le joueur dans cette manche
         self.frameMEJ = CTkFrame(self.frameSoldeMEJ,fg_color="gold",corner_radius=10)
         self.labelMEJ = CTkLabel(self.frameMEJ, text="Mise en jeu ", font=("Arial",12,"bold"),text_color="black")
-        self.labelMEJVariable = CTkLabel(self.frameMEJ, text="{}".format(self.MEJ), font=("Arial",13),text_color="black")
+        self.labelMEJVariable = CTkLabel(self.frameMEJ, text="{} $".format(self.MEJ), font=("Arial",13),text_color="black")
 
         '''
         MISER/BOUTONS
@@ -72,24 +72,15 @@ class Joueur():
 
         
     #--------
-    #setters
-    #--------
+    #methodes
+    #--------  
     def donner_main(self,paquet):
         self.cartes = [paquet.tirerUneCarte(), paquet.tirerUneCarte()]
-        
-    def setMEJ(self,montant):
-        self.MEJ+=montant
-        
-    def setSolde(self,montant):
-        self.solde+=montant    
-    
-    def setCheckStatut(self):
-        self.CheckStatut = not self.CheckStatut
-        
-    def setAllInStatut(self):
-        self.AllInStatut = not self.AllInStatut
+      
         
     def setMain(self):
+        
+        #si il a la main
         if self.main:
             self.main = False
             self.frame.configure(fg_color="white")
@@ -100,8 +91,48 @@ class Joueur():
             self.btnSeCoucher.configure(state="disabled")
             self.btnSuivre.configure(state="disabled")
             self.entryMiseEnJeu.configure(state="disabled")
+
+        
+        #sinon on lui donne la min
         else:
             self.main = True
+            
+            #on regarde si le joueur a fait a fait allIn
+            if self.AllInStatut:
+                
+                #on regarde si tout le monde a fait allIn
+                if all(joueur.AllInStatut==True for joueur in self.partie.manche.liste_joueurs):
+                    
+                    #on devoile toutes les cartes restantes
+                    match len(self.partie.manche.board.board):
+                        case 0:
+                            self.partie.manche.board.tirerFlop()
+                            self.partie.manche.board.afficherFlop()
+                            
+                            self.partie.manche.board.tirerCarte()
+                            self.partie.manche.board.afficherCarte()
+                            
+                            self.partie.manche.board.tirerCarte()
+                            self.partie.manche.board.afficherCarte()
+                        case 3 :
+                            self.partie.manche.board.tirerCarte()
+                            self.partie.manche.board.afficherCarte()
+                            
+                            self.partie.manche.board.tirerCarte()
+                            self.partie.manche.board.afficherCarte()
+                        case 4:
+                            self.partie.manche.board.tirerCarte()
+                            self.partie.manche.board.afficherCarte()
+                    
+                    self.interface.update()        
+                    self.setMain()
+                    DeterminerGagnant(self.partie)
+                    return 
+                
+                #on passe au joueur suivant
+                self.joueurSuivant()
+                return
+            
             self.frame.configure(fg_color="#87D3FF")
             self.frameSoldeMEJ.configure(fg_color="#87D3FF")
             self.btnAllIn.configure(state="normal")
@@ -120,10 +151,7 @@ class Joueur():
             
         self.interface.update()
       
-    
-    #--------
-    #methodes
-    #--------   
+     
     def faireApparaitreFrame(self):
         
         #position dans la grille
@@ -175,7 +203,7 @@ class Joueur():
         montant = int(montant)
         
         #cas ou le montant entrée est incorrecte
-        if not (0 < montant < self.solde):
+        if not (0 < montant < self.solde) and not self.AllInStatut:
             self.entryMiseEnJeu.configure(border_color="red", text_color="red")
             return #on sort de la fonction
         
@@ -199,11 +227,11 @@ class Joueur():
                 self.partie.manche.board.tirerFlop()
                 self.partie.manche.board.afficherFlop()
                 
-                self.donnerMainPostflop()  
+                self.partie.manche.donnerMainPostFlop()  
                     
             #cas ou tous le monde ne c'est pas encore aligné
             else:                               
-                self.joueurSuivant()
+                self.partie.manche.joueurSuivant()
                            
         #cas post flop
         else:
@@ -219,11 +247,11 @@ class Joueur():
                         DeterminerGagnant(self.partie)
                         return 
                         
-                self.donnerMainPostflop()        
+                self.partie.manche.donnerMainPostFlop()        
                                 
             #cas ou tous le monde n'a pas encore mis la meme mise
             else:
-                self.joueurSuivant()            
+                self.partie.manche.joueurSuivant()            
         
         
     def check(self):
@@ -245,48 +273,31 @@ class Joueur():
                     self.setMain()
                     DeterminerGagnant(self.partie)
                     return
-                   
-            self.donnerMainPostflop()  
-                    
+            
+            
             #on reinitialise le bouton check de tous les joueurs
             for joueur in self.partie.manche.liste_joueurs:
                 joueur.CheckStatut = False
-                joueur.btnCheckJ.configure(fg_color="#FDB470")
+                joueur.btnCheckJ.configure(fg_color="#FDB470")  
+                   
+            self.partie.manche.donnerMainPostFlop()   
 
         #sinon (donc si une personne n'a pas check)
         else:
             self.btnCheckJ.configure(fg_color="darkorange")
-            self.setMain() 
-            self.partie.manche.changerMain()
+            self.partie.manche.joueurSuivant()
                         
         self.interface.update()
-        
-        
-    def joueurSuivant(self):
-        '''
-        retire la main du joueur actuelle et passe au joueur suivant
-        '''
-        self.setMain() #on desactive sa main         
-        self.partie.manche.changerMain() #on passe au joueur suivant
-        
-    
-    def donnerMainPostflop(self):
-        '''
-        au postflop la main va tjs a la smallBlind (dès qu'une carte supplementaire a été retourné)
-        ''' 
-        self.setMain() #enlever la main du joueur actuel
-        self.partie.manche.main = self.partie.manche.smallBlind
-        self.partie.manche.liste_joueurs[self.partie.manche.main].setMain() 
-        
+  
         
     def MAJMontants(self):
         '''
         Mettre à jour des labels variables (solde, MEJ joueur, MEJ principale)
         '''
         self.entryMiseEnJeu.delete(0, "end")
-        self.labelSoldeVariable.configure(text="{}".format(self.solde))
-        self.labelMEJVariable.configure(text="{}".format(self.MEJ))
-        self.partie.labelMiseEnJeuVariable.configure(text="{}".format(self.partie.manche.MEJ))
+        self.labelSoldeVariable.configure(text="{} $".format(self.solde))
+        self.labelMEJVariable.configure(text="{} $".format(self.MEJ))
+        self.partie.labelMiseEnJeuVariable.configure(text="{} $".format(self.partie.manche.MEJ))
         self.entryMiseEnJeu.configure(border_color="grey", text_color="white")
         
         self.interface.update()
@@ -297,20 +308,20 @@ class Joueur():
         '''
         MEJ_joueur_precedent = self.partie.manche.liste_joueurs[(self.numero - 1)%len(self.partie.manche.liste_joueurs)].MEJ
         #si mon solde + ma mise en jeu est supérieur ou egal à la mise en jeu du joueur precedent
-        if self.solde + self.MEJ >= MEJ_joueur_precedent:
-            montant = MEJ_joueur_precedent - self.MEJ
+        if self.solde + self.MEJ > MEJ_joueur_precedent:
+            montant = MEJ_joueur_precedent - self.MEJ 
             self.mise(montant)
 
-        #sinon (inferieur)
+        #sinon (inferieur ou égal)
         else:
             self.allIn()
     
     
     def allIn(self):
-        pass 
+        self.AllInStatut = True
+        self.mise(self.solde)
        
      
-    def seCoucher(self):
-        pass
+
     
     

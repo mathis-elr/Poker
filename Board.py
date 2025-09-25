@@ -21,9 +21,9 @@ class Board():
         self.board[0].cartePhysiqueBoard(self.partie.frameCarte1)
         self.board[1].cartePhysiqueBoard(self.partie.frameCarte2)
         self.board[2].cartePhysiqueBoard(self.partie.frameCarte3)
-        self.partie.frameCarte1.grid(row=1,column=1,padx=50,pady=50)
-        self.partie.frameCarte2.grid(row=1,column=2,padx=50,pady=50)
-        self.partie.frameCarte3.grid(row=1,column=3,padx=50,pady=50)
+        self.partie.frameCarte1.grid(row=1,column=1,padx=20,pady=20)
+        self.partie.frameCarte2.grid(row=1,column=2,padx=20,pady=20)
+        self.partie.frameCarte3.grid(row=1,column=3,padx=20,pady=20)
         
         self.partie.interface.update()
        
@@ -37,10 +37,10 @@ class Board():
         match len(self.board)-1:
             case 3:
                 self.board[len(self.board)-1].cartePhysiqueBoard(self.partie.frameCarte4)
-                self.partie.frameCarte4.grid(row=1,column=len(self.board),padx=50,pady=50)
+                self.partie.frameCarte4.grid(row=1,column=len(self.board),padx=20,pady=20)
             case 4:
                 self.board[len(self.board)-1].cartePhysiqueBoard(self.partie.frameCarte5)
-                self.partie.frameCarte5.grid(row=1,column=len(self.board),padx=50,pady=50)
+                self.partie.frameCarte5.grid(row=1,column=len(self.board),padx=20,pady=20)
     
         
         self.partie.interface.update()
