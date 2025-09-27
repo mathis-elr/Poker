@@ -344,6 +344,8 @@ class Joueur():
             self.partie.manche.liste_joueurs.remove(self)
             self.frame.configure(fg_color="red")
         
+    def determinerMain(self):
+        pass
         
     
     

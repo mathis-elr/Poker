@@ -12,8 +12,13 @@ class Carte():
         return self.couleur
     def getValeur(self):
         return self.valeur
-
     
+    def getCarte(self):
+        return [self.couleur,self.valeur]
+
+
+
+    #methodes
     def DefinirCouleurCarte(self):
         '''
         renvoi la couleur (en anglais pour utiliser dans les variables de couleur) en fonction de la couleur de la carte
@@ -21,36 +26,36 @@ class Carte():
         if self.couleur=="trèfle" or self.couleur=="pique":
             return "black"
         else:
-            #pour coeur et carreau
-            return "red"
+            return "red" #pour coeur et carreau
     
     def valeur_patern(self):
-        if self.valeur=='As':
-            return '{}'.format(self.valeur_signe())
-        if self.valeur=='2':
-            return '{}\n{}'.format(*[self.valeur_signe()]*2)
-        if self.valeur=='3':
-            return '{}\n{}\n{}'.format(*[self.valeur_signe()]*3)
-        if self.valeur=='4':
-            return '{}  {}\n\n{}  {}'.format(*[self.valeur_signe()]*4)
-        if self.valeur=='5':
-            return '{}  {}\n{}\n{}  {}'.format(*[self.valeur_signe()]*5)
-        if self.valeur=='6':
-            return '{}  {}\n{}  {}\n{}  {}'.format(*[self.valeur_signe()]*6)
-        if self.valeur=='7':
-            return '{}  {}\n{}\n{}  {}\n{}  {}'.format(*[self.valeur_signe()]*7)
-        if self.valeur=='8':
-            return '{}  {}\n{}  {}\n{}  {}\n{}  {}'.format(*[self.valeur_signe()]*8)
-        if self.valeur=='9':
-            return '{}  {}\n{} {} {}\n{}  {}\n{}  {}'.format(*[self.valeur_signe()]*9)
-        if self.valeur=='10':
-            return '{}  {}\n{} {} {}\n{} {} {}\n{}  {}'.format(*[self.valeur_signe()]*10)
-        if self.valeur=='Valet':
-            return '👲'
-        if self.valeur=='Dame':
-            return '👸'
-        if self.valeur=='Roi':
-            return '🤴'
+        match self.valeur:
+            case 'As':
+                return '{}'.format(self.valeur_signe())
+            case '2':
+                return '{}\n{}'.format(*[self.valeur_signe()]*2)
+            case '3':
+                return '{}\n{}\n{}'.format(*[self.valeur_signe()]*3)
+            case '4':
+                return '{}  {}\n\n{}  {}'.format(*[self.valeur_signe()]*4)
+            case '5':
+                return '{}  {}\n{}\n{}  {}'.format(*[self.valeur_signe()]*5)
+            case '6':
+                return '{}  {}\n{}  {}\n{}  {}'.format(*[self.valeur_signe()]*6)
+            case '7':
+                return '{}  {}\n{}\n{}  {}\n{}  {}'.format(*[self.valeur_signe()]*7)
+            case '8':
+                return '{}  {}\n{}  {}\n{}  {}\n{}  {}'.format(*[self.valeur_signe()]*8)
+            case '9':
+                return '{}  {}\n{} {} {}\n{}  {}\n{}  {}'.format(*[self.valeur_signe()]*9)
+            case '10':
+                return '{}  {}\n{} {} {}\n{} {} {}\n{}  {}'.format(*[self.valeur_signe()]*10)
+            case 'Valet':
+                return '👲'
+            case 'Dame':
+                return '👸'
+            case 'Roi':
+                return '🤴'
 
     def valeur_signe(self):
         '''
