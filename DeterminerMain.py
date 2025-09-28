@@ -15,26 +15,21 @@ class DeterminerMains():
             self.nbCartesParCouleur[carte[0]]+=1
             self.nbCartesParValeur[carte[1]]+=1
         
-        #contient le prenom du joueur ainsi que toutes ces combinaisons de la forme [nom_combinaison,infor_sur_la_combinaison]
-        self.jeu = [self.joueur.nom]
+        #contient le nom du joueur ainsi que toutes ces combinaisons de la forme [nom_combinaison,infor_sur_la_combinaison ou None si ilne l'a pas]
+        self.jeu = [self.joueur]
         
-        print(self.cartes) 
    
-        self.QuinteFlushRoyale() 
+        self.QuinteFlushRoyale()
         self.QuinteFlush()
         self.Carre()
         self.Full()
         self.Couleur()
         self.Quinte()
-        self.Couleur()
         self.Brelan()
         self.DoublePaire()
         self.Paire()
         self.carteHaute()
-        
-        print(self.jeu)
             
-
     '''
     COMBINAISONS
     '''
@@ -45,7 +40,6 @@ class DeterminerMains():
         couleur_royale=None
         #1 etape chercher si y a bien une couleur 
         if self.Couleur()!=[]:
-            self.jeu.pop(-1)
             for k,v in self.nbCartesParCouleur.items():
                 if v>4:
                     #couleur existante
@@ -55,8 +49,11 @@ class DeterminerMains():
                     cartes_requises_royale = [['10', couleur_royale], ['Valet', couleur_royale], ['Dame', couleur_royale], ['Roi', couleur_royale],['As', couleur_royale]]
                     #on regarde si les cartes requise se trouvent dans le jeu dun joueur
                     if all(carte in self.cartes for carte in cartes_requises_royale):
-                        self.jeu.append(["QuinteFlushRoyale",couleur_royale])
-                
+                        self.jeu.pop(-1) #on supprime la couleur 
+                        return self.jeu.append(["Quinte Flush Royale",couleur_royale])
+        
+        self.jeu.pop(-1) #on supprime la couleur   
+        self.jeu.append(["Quinte Flush Royale",None])
     
     def QuinteFlush(self):
         '''
@@ -64,11 +61,17 @@ class DeterminerMains():
         '''
         #1 etape chercher si y a bien une couleur 
         if self.Couleur()!=[]:
-            self.jeu.pop(-1) #on viens d'appeller couleur donc ca ajoute couleur dans la lste mais pas au bon endroit
             #2 etape on cherche si il ya suite dans cette couleur
-            if self.Quinte()==False:
-                self.jeu.pop(-1)
-                self.jeu.append(["QuinteFlush",None])
+            if self.Quinte()!=False:
+                meilleure_carte = self.jeu[-1]
+                self.jeu.pop(-1) #on supprime la quinte
+                self.jeu.pop(-1) #on supprime la couleur  
+                return self.jeu.append(["Quinte Flush",meilleure_carte])
+            else:
+                self.jeu.pop(-1) #on supprime la quinte
+                
+        self.jeu.pop(-1) #on supprime la couleur        
+        self.jeu.append(["Quinte Flush",None])
             
 
     def Carre(self):
@@ -77,20 +80,23 @@ class DeterminerMains():
         '''
         for k,v in self.nbCartesParValeur.items():
             if v==4:
-                self.jeu.append(["Carre",k])
+                return self.jeu.append(["Carre",k])
+        
+        self.jeu.append(["Carre",None])
 
 
     def Full(self):
         '''
         renvoi la valeur de la carte qui fait brelan si brelan il y a (Full = Brelan + Paire)
         '''
-        brelan_max = self.Brelan() #on stock la valeur du brelan si il y'en a une 
-        if self.Paire()!=0:
+        brelan_max = self.Brelan() #on stock la valeur du brelan si il y'en a une
+        if self.Paire()!=0 and brelan_max!=None:
             self.jeu.pop(-1) #on supprime la paire
-            if brelan_max!=None:
-                self.jeu.pop(-1) #on supprime le  brelan
-                self.jeu.append(["Full",brelan_max])
-        
+            self.jeu.pop(-1) #on supprime le brelan
+            return self.jeu.append(["Full",brelan_max])
+        self.jeu.pop(-1) #on supprime la paire 
+        self.jeu.pop(-1) #on supprime le brelan 
+        self.jeu.append(["Full",None])
 
 
     def Couleur(self):
@@ -101,11 +107,15 @@ class DeterminerMains():
         for key,value in self.nbCartesParCouleur.items():
             if value>4:
                 for a,b in self.cartes:
-                    if b==key:
-                        cartesCouleur.append(self.valeurCarte(a))
+                    if a==key:
+                        cartesCouleur.append(self.valeurCarte(b))
                 cartesCouleur.sort(reverse=True)
-                self.jeu.append(["Couleur", cartesCouleur])
+                self.jeu.append(["Couleur", cartesCouleur[0]])
+                return cartesCouleur
+            
+        self.jeu.append(["Couleur", None])       
         return cartesCouleur
+
             
 
     def Quinte(self):
@@ -137,6 +147,8 @@ class DeterminerMains():
             if len(maxsuite)==5:
                 self.jeu.append(["Quinte", maxsuite[0]])
                 return maxsuite[0]
+            
+        self.jeu.append(["Quinte", None])
         return False
 
 
@@ -150,7 +162,10 @@ class DeterminerMains():
                 brelanMax=k
         if brelanMax!=None:
             self.jeu.append(["Brelan", brelanMax])
-            return brelanMax
+        else:
+            self.jeu.append(["Brelan", None])
+            
+        return brelanMax
 
 
     def DoublePaire(self):
@@ -166,7 +181,9 @@ class DeterminerMains():
                 else:
                     paires.append(self.valeurCarte(k))
         if len(paires)==2:
-            self.jeu.append(["DoublePaire", paires])
+            self.jeu.append(["Double Paire", paires])
+        else:
+            self.jeu.append(["Double Paire", None])
 
 
     def Paire(self):
@@ -180,6 +197,9 @@ class DeterminerMains():
                     paireMax=self.valeurCarte(k)
         if paireMax!=0:
             self.jeu.append(["Paire", paireMax])
+        else:
+            self.jeu.append(["Paire", None])
+            
         return paireMax
     
     
@@ -191,7 +211,8 @@ class DeterminerMains():
         for carte in self.cartes:
             if self.valeurCarte(carte[1])> valeur_carte_max:
                 valeur_carte_max = self.valeurCarte(carte[1])
-        self.jeu.append(["CarteHaute",valeur_carte_max])
+                
+        self.jeu.append(["Carte Haute",valeur_carte_max])
 
     
     def valeurCarte(self,valeur_carte):

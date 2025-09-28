@@ -36,10 +36,10 @@ class Board():
         #on affiche une carte supplémentaire (4e ou 5e)
         match len(self.board)-1:
             case 3:
-                self.board[len(self.board)-1].cartePhysiqueBoard(self.partie.frameCarte4)
+                self.board[3].cartePhysiqueBoard(self.partie.frameCarte4)
                 self.partie.frameCarte4.grid(row=1,column=len(self.board),padx=20,pady=20)
             case 4:
-                self.board[len(self.board)-1].cartePhysiqueBoard(self.partie.frameCarte5)
+                self.board[4].cartePhysiqueBoard(self.partie.frameCarte5)
                 self.partie.frameCarte5.grid(row=1,column=len(self.board),padx=20,pady=20)
     
         

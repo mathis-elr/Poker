@@ -90,17 +90,17 @@ class Joueur():
             self.btnSeCoucher.configure(state="disabled")
             self.btnSuivre.configure(state="disabled")
             self.entryMiseEnJeu.configure(state="disabled")
-
+            
         
-        #sinon on lui donne la min
+        #sinon on lui donne la main
         else:
             self.main = True
             
             #on regarde si le joueur a fait a fait allIn
-            if self.AllInStatut:
+            if self.AllInStatut or len(self.partie.manche.liste_joueurs)==1:
                 
                 #on regarde si tout le monde a fait allIn
-                if all(joueur.AllInStatut==True for joueur in self.partie.manche.liste_joueurs):
+                if all(joueur.AllInStatut==True for joueur in self.partie.manche.liste_joueurs) or len(self.partie.manche.liste_joueurs)==1:
                     
                     #on devoile toutes les cartes restantes
                     match len(self.partie.manche.board.board):
@@ -142,7 +142,6 @@ class Joueur():
             #si ma mise est égale à la mise de tout les autres joueurs, le check est possible
             if all(self.MEJ == joueur.MEJ for joueur in self.partie.manche.liste_joueurs): 
                 self.btnCheckJ.configure(state="normal")
-                self.btnSeCoucher.configure(state="disabled")
             #sinon le bouton reste desactivé
             
             #si la mise de tout les joueur n'est pas égale
@@ -326,13 +325,15 @@ class Joueur():
         '''
         on me retire de la liste des joueurs de la manche ainsi que que de la liste ephemere si je suis pas le dealer
         '''
-        #cas ou il ne reste que 2 joueurs (et que dcp comme cette fonction est appeller l'un deux se couche)
-        if len(self.partie.liste_joueurs) == 2:
+        #cas ou il ne reste que 2 joueurs (et que dcp comme cette fonction est appellé le joueur courant se couche donc plus qu'un seul joueur)
+        if len(self.partie.manche.liste_joueurs) == 2:
             #fin de manche il ne reste qu'un joueur qui gagne
             self.partie.manche.liste_joueurs.remove(self)
             self.setMain()
-            DeterminerGagnant(self.partie)
-        
+            self.frame.configure(fg_color="red")
+            self.partie.manche.main = self.partie.manche.liste_joueurs[0]
+            self.partie.manche.main.setMain()
+
         #sinon on le supprime de la manche et on passe au joueur suivant
         else:
             self.partie.manche.joueurSuivant()
@@ -342,7 +343,8 @@ class Joueur():
                 self.partie.manche.liste_joueurs_ephemere.remove(self)
             
             self.partie.manche.liste_joueurs.remove(self)
-            self.frame.configure(fg_color="red")
+            
+        self.frame.configure(fg_color="red")
         
     def determinerMain(self):
         pass
