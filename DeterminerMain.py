@@ -181,6 +181,7 @@ class DeterminerMains():
                 else:
                     paires.append(self.valeurCarte(k))
         if len(paires)==2:
+            paires.sort(reverse=True) #on met la plus haute paire en première, obligé pour que compareMain fonctionne
             self.jeu.append(["Double Paire", paires])
         else:
             self.jeu.append(["Double Paire", None])

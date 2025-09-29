@@ -114,4 +114,4 @@ mains6 = {
 
 #print(comparerMains(mains5)) → ok
 
-print(comparerMains(mains6)) 
+#print(comparerMains(mains6)) → ok
