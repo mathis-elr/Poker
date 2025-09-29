@@ -353,6 +353,14 @@ class Joueur():
         self.cartes = []
         self.main = False
         
+        #suppression du contenu des cartes 
+        for children in self.frameVoirCarte1.winfo_children():
+            children.destroy()
+        for children in self.frameVoirCarte2.winfo_children():
+            children.destroy()
+            
+        self.frameVoirCarte1.configure(self.frame,fg_color="#222222",border_color="red",border_width=2)
+        self.frameVoirCarte2.configure(self.frame,fg_color="#222222",border_color="red",border_width=2)
     
     def __del__(self):
         if self.frame.winfo_exists():

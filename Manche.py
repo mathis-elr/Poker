@@ -95,22 +95,24 @@ class Manche():
         self.main.setMain()
         
     def finManche(self, gagnant):
-
-        gagnant.solde += self.MEJ
-        for joueur in self.liste_joueurs:
-            
-            #on vire les personnes qui ont plus de sous
-            if joueur.solde == 0:
-                self.partie.liste_joueurs.remove(joueur)
-                del joueur # appel du destructeur du joueur
-                
-            joueur.reset() #on reinitialise les infos des joueurs
-            joueur.MAJMontants() #on met a jour les labels en consequence
-            
-        #si il reste qu'un joueur alors fin partie
-        if self.partie.liste_joueurs==1:
-            self.partie.finPartie()
+        #cas ou y a egalite donc pas de gagnant
+        if gagnant==[]:
+            pass
+        
+        #dans le cas ou y a un gagnant
         else:
+            gagnant.solde += self.MEJ
+            for joueur in self.liste_joueurs:
+                #on vire les personnes qui ont plus de sous
+                if joueur.solde == 0:
+                    self.partie.liste_joueurs.remove(joueur)
+                    del joueur # appel du destructeur du joueur
+
+            #si il reste qu'un joueur alors fin partie
+            if self.partie.liste_joueurs==1:
+                self.partie.finPartie()
+                
+        if self.partie.liste_joueurs!=1:
             #on relance une nouvelle manche dans 5s
             self.partie.interface.after(5000,lambda:self.partie.nvlManche())
         

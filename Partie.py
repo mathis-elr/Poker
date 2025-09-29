@@ -79,6 +79,11 @@ class Partie():
         #on enleve les cartes du flop 
         for frameCarte in self.frameCartes.winfo_children():
             frameCarte.destroy()
+            
+        for joueur in self.liste_joueurs:
+            joueur.reset() #on reinitialise les infos des joueurs
+            joueur.MAJMontants() #on met a jour les labels en consequence
+            
         self.manche.__init__(self.liste_joueurs,self)
         self.manche.setMainPreFlop() #personne qui doit commencer (à gauche de la big blinde), type : Joueur
             

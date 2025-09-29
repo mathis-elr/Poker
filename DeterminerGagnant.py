@@ -57,7 +57,7 @@ class DeterminerGagnant():
                             case 0|1|3|4|5: #cas pour QuinteFlushRoyale ,QuinteFlush, Full, Couleur, Quinte
                                 self.text = "{} gagne avec {}".format(joueur_gagnant.nom, combinaison[0])
                             case 7:
-                                self.text = "{} gagne avec {} de {}".format(joueur_gagnant, combinaison[0], combinaison[1][0])
+                                self.text = "{} gagne avec {} de {} et {}".format(joueur_gagnant.nom, combinaison[0], combinaison[1][0], combinaison[1][1])
                                 
                         self.marquerGagnant(joueur_gagnant)
                         return #fin fonction
@@ -74,7 +74,7 @@ class DeterminerGagnant():
                             if len(joueurs_meilleurs_paires) == 1:
                                 #on a un gagnant
                                 joueur_gagnant = joueurs_meilleurs_paires[0]
-                                self.text = "{} gagne avec {} de {}".format(joueur_gagnant, self.mains[joueur_gagnant][i][0], self.mains[joueur_gagnant][i][1][j])
+                                self.text = "{} gagne avec {} de {} et {}".format(joueur_gagnant.nom, self.mains[joueur_gagnant][i][0], self.mains[joueur_gagnant][i][1][0], self.mains[joueur_gagnant][i][1][1])
                                 self.marquerGagnant(joueur_gagnant)
                                 break #fin fonction
                                 
@@ -87,17 +87,18 @@ class DeterminerGagnant():
                             if meilleurs_joueurs == 1:
                                 #on a un gagnant
                                 joueur_gagnant = meilleurs_joueurs[0]
-                                text = "{} gagne avec {} de {}".format(joueur_gagnant, self.mains[joueur_gagnant][i][0], self.mains[joueur_gagnant][i][1])
+                                text = "{} gagne avec {} de {}".format(joueur_gagnant.nom, self.mains[joueur_gagnant][i][0], self.mains[joueur_gagnant][i][1])
                                 self.marquerGagnant(joueur_gagnant)
                                 break #fin fonction
                             
                             if i==9:
                                 self.text = "egalité carte Haute"
-                                self.partie.nvlManche()
+                                self.partie.manche.finManche([])
 
     def marquerGagnant(self, gagnant):
-        gagnant.label_badge.configure(text="👑",fg_color="gold")
-        gagnant.frameBadge.configure(fg_color="gold")
+        gagnant.label_badge.configure(text="👑")
+        gagnant.frameBadge.configure(fg_color="gold") #sa change la couleur mais pendant que 5s grace a la ligne d'apres
+        self.partie.interface.after(5000, lambda:gagnant.frameBadge.configure(fg_color="blue"))
         gagnant.frameBadge.grid(row=1,column=2,padx=5,pady=5)
         gagnant.label_badge.grid(row=1,column=1,padx=5,pady=5)
         
