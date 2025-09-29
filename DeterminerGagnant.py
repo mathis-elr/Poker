@@ -17,9 +17,9 @@ class DeterminerGagnant():
             main_joueur = DeterminerMains(self.partie,joueur)
             self.mains[main_joueur.jeu[0]] = main_joueur.jeu[1:]
         
+        print(self.mains)
         #determine le gagant en comparant les maisn des joueurs pas couché
         self.comparerMains()
-        
         #affiche le gagant
         self.labelGagant= CTkLabel(self.partie.frameCartes, text="{}".format(self.text),font=("Arial",40),text_color="orange")
         self.labelGagant.grid(row=2,column=1,columnspan=5,pady=10)
@@ -49,51 +49,60 @@ class DeterminerGagnant():
                     case 1:
                         
                         #on a le gagnant
-                        joueur, nom_combinaison = combinaisonIdesJoueurs.popitem()
-                        combinaison = self.mains[joueur][i]
+                        joueur_gagnant, inutile = combinaisonIdesJoueurs.popitem()
+                        combinaison = self.mains[joueur_gagnant][i]
                         match i:
-                            case 2|6|7|8|9: #cas pour Carre, Brelan, DoublrPaire, Paire, CarteHaute
-                                self.text = "{} gagne avec {} de {}".format(joueur.nom, combinaison[0], combinaison[1])
+                            case 2|6|7|8|9: #cas pour Carre, Brelan, DoublePaire, Paire, CarteHaute
+                                self.text = "{} gagne avec {} de {}".format(joueur_gagnant.nom, combinaison[0], combinaison[1])
                             case 0|1|3|4|5: #cas pour QuinteFlushRoyale ,QuinteFlush, Full, Couleur, Quinte
-                                self.text = "{} gagne avec {}".format(joueur.nom, combinaison[0])
+                                self.text = "{} gagne avec {}".format(joueur_gagnant.nom, combinaison[0])
+                            case 7:
+                                self.text = "{} gagne avec {} de {}".format(joueur_gagnant, combinaison[0], combinaison[1][0])
+                                
+                        self.marquerGagnant(joueur_gagnant)
                         return #fin fonction
                         
                     case _:
                         
                         if i == 7: #cas de la double paire 
-                            meilleure_paire = []
-                            valeur_meilleure_paire = 0
-                            for i in range(2):
-                                pairesI = {joueur:self.mains[joueur][i][1] for joueur in combinaisonIdesJoueurs} 
-                                for joueur, valeur_paire in pairesI.items():
-                                    print(joueur,valeur_paire)
-                                    if valeur_paire >=valeur_meilleure_paire:
-                                        valeur_meilleure_paire = valeur_paire
-                                        meilleure_paire.append(joueur)
+                            for j in range(2):
+                                max_valeur_paire_courante = max(v[j] for v in combinaisonIdesJoueurs.values())
+                                joueurs_meilleurs_paires = [joueur for joueur,valeur in combinaisonIdesJoueurs.items() if max_valeur_paire_courante==valeur[j]]
+                        
                             
                             #cas ou un des deux joueurs a une meilleure paire
-                            if len(meilleure_paire) == 1:
+                            if len(joueurs_meilleurs_paires) == 1:
                                 #on a un gagnant
-                                joueur_gagnant = joueurs_meilleure_valeur[0]
-                                self.text = "{} gagne avec {} de {}".format(joueur_gagnant.nom,self.mains[joueur_gagnant][0], valeur_paire)
+                                joueur_gagnant = joueurs_meilleurs_paires[0]
+                                self.text = "{} gagne avec {} de {}".format(joueur_gagnant, self.mains[joueur_gagnant][i][0], self.mains[joueur_gagnant][i][1][j])
+                                self.marquerGagnant(joueur_gagnant)
                                 break #fin fonction
                                 
                         
                         else: #tout les cas sauf pour la double Paire (et la Quinte Flush Royale)
-                            joueurs_meilleure_valeur = []
-                            valeur_meilleure_carte = 0
-                            for joueur in combinaisonIdesJoueurs:
-                                print("combinaisonIdesJoueurs[joueur]: ",combinaisonIdesJoueurs[joueur])
-                                if combinaisonIdesJoueurs[joueur] >= valeur_meilleure_carte: #PROBLEME ICI LIST >= INT
-                                    valeur_meilleure_carte = combinaisonIdesJoueurs[joueur]
-                                    joueurs_meilleure_valeur.append(joueur)
-                                    
-                            if joueurs_meilleure_valeur == 1:
+                            valeur_max = max(combinaisonIdesJoueurs.values())
+                            meilleurs_joueurs = [joueur for joueur,valeur in combinaisonIdesJoueurs.items() if valeur==valeur_max]       
+                         
+                        #pour gerer en cas de doublon (donc on boucle si len(meilleurs_joueurs>1 car egalité de combinaison)
+                            if meilleurs_joueurs == 1:
                                 #on a un gagnant
-                                joueur_gagnant = joueurs_meilleure_valeur[0]
-                                self.text = "{} gagne avec {} de {}".format(joueur_gagnant.nom,self.mains[joueur_gagnant][0], self.mains[joueur_gagnant][1])
+                                joueur_gagnant = meilleurs_joueurs[0]
+                                text = "{} gagne avec {} de {}".format(joueur_gagnant, self.mains[joueur_gagnant][i][0], self.mains[joueur_gagnant][i][1])
+                                self.marquerGagnant(joueur_gagnant)
                                 break #fin fonction
                             
-                            if i==10:
-                                self.text = "egalité"
+                            if i==9:
+                                self.text = "egalité carte Haute"
+                                self.partie.nvlManche()
+
+    def marquerGagnant(self, gagnant):
+        gagnant.label_badge.configure(text="👑",fg_color="gold")
+        gagnant.frameBadge.configure(fg_color="gold")
+        gagnant.frameBadge.grid(row=1,column=2,padx=5,pady=5)
+        gagnant.label_badge.grid(row=1,column=1,padx=5,pady=5)
+        
+        self.partie.interface.update()
+        
+        self.partie.manche.finManche(gagnant)
+        
         

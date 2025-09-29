@@ -52,23 +52,15 @@ class Partie():
         '''
         #frame représentant le plateau de jeu (apparissions des cartes)
         self.frameCartes = CTkFrame(self.interface, width=900, height=250,fg_color="green",border_color="red",border_width=5,corner_radius=60)
-        
-        self.frameCarte1= CTkFrame(self.frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
-        self.frameCarte2 = CTkFrame(self.frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
-        self.frameCarte3= CTkFrame(self.frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
-        self.frameCarte4 = CTkFrame(self.frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
-        self.frameCarte5 = CTkFrame(self.frameCartes, fg_color="white",width=140,height=195,corner_radius=20) 
-        
         self.frameCartes.grid(row=2,column=1,columnspan=3,padx=10,pady=10)
                 
         
         '''
         Creation de la première manche
         '''
-        self.liste_joueurs = [Joueur(joueur,self,self.interface) for joueur in joueurs]
-        self.manche = Manche(self.liste_joueurs,self,interface)
+        self.liste_joueurs = [Joueur(nom_joueur,self) for nom_joueur in joueurs]
+        self.manche = Manche(self.liste_joueurs,self)
         self.manche.setMainPreFlop() #personne qui doit commencer (à gauche de la big blinde), type : Joueur
-        
         self.creeFrames() #crée les joueurs dans l'interface
         
     
@@ -80,16 +72,33 @@ class Partie():
         afficher les frames de chaque joueurs
         '''
         for joueur in self.liste_joueurs:
-            joueur.faireApparaitreFrame() 
+            joueur.faireApparaitreFrame()
+          
+            
+    def nvlManche(self):
+        #on enleve les cartes du flop 
+        for frameCarte in self.frameCartes.winfo_children():
+            frameCarte.destroy()
+        self.manche.__init__(self.liste_joueurs,self)
+        self.manche.setMainPreFlop() #personne qui doit commencer (à gauche de la big blinde), type : Joueur
+            
             
     def nvlPartie(self):
         '''
-        on supprime la patie actuele t on en crée ue nouvelle
+        on supprime la partie actuele et on en crée ue nouvelle avec les mêmes joueurs
         '''
         for widget in self.interface.winfo_children():
             widget.destroy()
             
         Partie(self.interface,self.noms_joueurs)
+        
+        
+    def finPartie(self):
+        '''
+        lance une nouvelle partie 5s après l'appel de cette fonction
+        '''
+        self.interface.after(5000,lambda:self.nvlPartie())
+    
     
     def quitter(self):
         '''

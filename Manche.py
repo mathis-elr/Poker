@@ -5,10 +5,9 @@ from PaquetCartes import PaquetCartes
 from Board import Board
 
 class Manche():
-    def __init__(self,lesJoueurs,partie,interface):
+    def __init__(self,lesJoueurs,partie):
         self.MEJ = 0
         self.partie = partie
-        self.interface = interface
         
         self.liste_joueurs = lesJoueurs.copy()
         self.liste_joueurs_ephemere = self.liste_joueurs.copy() #pareil que liste joueurs mais quand le dealer se couche on ne l'enleve pas pour pouvoir tjs donner la main a la personne a la gauche du dealer
@@ -52,7 +51,17 @@ class Manche():
         self.MEJ += (self.smallBlind.MEJ + self.bigBlind.MEJ)
         self.partie.labelMiseEnJeuVariable.configure(text="{} $".format(self.MEJ))
         
-        self.interface.update()
+        
+        '''
+        LES CARTES COMMUNES
+        '''
+        self.frameCarte1= CTkFrame(self.partie.frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
+        self.frameCarte2 = CTkFrame(self.partie.frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
+        self.frameCarte3= CTkFrame(self.partie.frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
+        self.frameCarte4 = CTkFrame(self.partie.frameCartes, fg_color="white",width=140,height=195,corner_radius=20)
+        self.frameCarte5 = CTkFrame(self.partie.frameCartes, fg_color="white",width=140,height=195,corner_radius=20) 
+        
+        self.partie.interface.update()
 
   
     #--------
@@ -84,3 +93,24 @@ class Manche():
         self.main.setMain()  
         self.main = self.liste_joueurs[(self.liste_joueurs.index(self.main)+1)%len(self.liste_joueurs)] #on passe la main au joueur suivant avec modulo pour que le suivant du dernier joueur soit le premier, type : Joueur
         self.main.setMain()
+        
+    def finManche(self, gagnant):
+
+        gagnant.solde += self.MEJ
+        for joueur in self.liste_joueurs:
+            
+            #on vire les personnes qui ont plus de sous
+            if joueur.solde == 0:
+                self.partie.liste_joueurs.remove(joueur)
+                del joueur # appel du destructeur du joueur
+                
+            joueur.reset() #on reinitialise les infos des joueurs
+            joueur.MAJMontants() #on met a jour les labels en consequence
+            
+        #si il reste qu'un joueur alors fin partie
+        if self.partie.liste_joueurs==1:
+            self.partie.finPartie()
+        else:
+            #on relance une nouvelle manche dans 5s
+            self.partie.interface.after(5000,lambda:self.partie.nvlManche())
+        

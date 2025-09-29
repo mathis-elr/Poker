@@ -4,7 +4,7 @@ from DeterminerGagnant import DeterminerGagnant
 
 class Joueur():
     
-    def __init__(self,nom,partie,interface):
+    def __init__(self,nom,partie):
         self.nom = nom
         self.solde = 10000
         self.MEJ = 0
@@ -13,10 +13,9 @@ class Joueur():
         self.cartes = []
         self.main = False
         self.partie = partie
-        self.interface = interface
         
         #frame contenant toutes les infos du joueur
-        self.frame = CTkFrame(self.interface, fg_color="white",corner_radius=15)
+        self.frame = CTkFrame(self.partie.interface, fg_color="white",corner_radius=15)
         
         '''
         NOM JOUEUR
@@ -123,7 +122,7 @@ class Joueur():
                             self.partie.manche.board.tirerCarte()
                             self.partie.manche.board.afficherCarte()
                     
-                    self.interface.update()        
+                    self.partie.interface.update()        
                     self.setMain()
                     DeterminerGagnant(self.partie)
                     return 
@@ -148,7 +147,7 @@ class Joueur():
             if any(self.MEJ != joueur.MEJ for joueur in self.partie.manche.liste_joueurs):
                 self.btnSuivre.configure(state="normal")
             
-        self.interface.update()
+        self.partie.interface.update()
       
      
     def faireApparaitreFrame(self):
@@ -188,14 +187,14 @@ class Joueur():
         
     def voirCarte1(self,event):
         self.cartes[0].afficherCartePhysiqueJoueur(self.frameVoirCarte1)
-        self.interface.update()
-        self.interface.after(3000,lambda:self.cartes[0].cacherCartePhysiqueJoueur(self.frameVoirCarte1)) #lambda : pour pas que sa s'exectute tout dessuite et que ça "freeze" le mainloop (ex : pouvoir regarder deux cartes en même temps)
+        self.partie.interface.update()
+        self.partie.interface.after(3000,lambda:self.cartes[0].cacherCartePhysiqueJoueur(self.frameVoirCarte1)) #lambda : pour pas que sa s'exectute tout dessuite et que ça "freeze" le mainloop (ex : pouvoir regarder deux cartes en même temps)
     
     
     def voirCarte2(self,event):
         self.cartes[1].afficherCartePhysiqueJoueur(self.frameVoirCarte2)
-        self.interface.update()
-        self.interface.after(3000,lambda:self.cartes[1].cacherCartePhysiqueJoueur(self.frameVoirCarte2))
+        self.partie.interface.update()
+        self.partie.interface.after(3000,lambda:self.cartes[1].cacherCartePhysiqueJoueur(self.frameVoirCarte2))
         
     
     def mise(self,montant):
@@ -286,7 +285,7 @@ class Joueur():
             self.btnCheckJ.configure(fg_color="darkorange")
             self.partie.manche.joueurSuivant()
                         
-        self.interface.update()
+        self.partie.interface.update()
   
         
     def MAJMontants(self):
@@ -299,7 +298,7 @@ class Joueur():
         self.partie.labelMiseEnJeuVariable.configure(text="{} $".format(self.partie.manche.MEJ))
         self.entryMiseEnJeu.configure(border_color="grey", text_color="white")
         
-        self.interface.update()
+        self.partie.interface.update()
                     
     def suivre(self):
         '''
@@ -346,8 +345,19 @@ class Joueur():
             
         self.frame.configure(fg_color="red")
         
-    def determinerMain(self):
-        pass
+        
+    def reset(self):
+        self.MEJ = 0
+        self.CheckStatut = False
+        self.AllInStatut = False
+        self.cartes = []
+        self.main = False
+        
+    
+    def __del__(self):
+        if self.frame.winfo_exists():
+            self.frame.destroy()
+        
         
     
     
