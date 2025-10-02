@@ -9,4 +9,3 @@ if appdefinirJoueurs.noms_joueurs:
     poker = CTk()
     Partie(poker,appdefinirJoueurs.noms_joueurs)
     poker.mainloop()
-  

@@ -53,11 +53,11 @@ class DeterminerGagnant():
                         combinaison = self.mains[joueur_gagnant][i]
                         match i:
                             case 2|6|7|8|9: #cas pour Carre, Brelan, DoublePaire, Paire, CarteHaute
-                                self.text = "{} gagne avec {} de {}".format(joueur_gagnant.nom, combinaison[0], combinaison[1])
+                                self.text = "{} gagne avec {} de {}".format(joueur_gagnant.nom, combinaison[0], self.nomCarte(combinaison[1]))
                             case 0|1|3|4|5: #cas pour QuinteFlushRoyale ,QuinteFlush, Full, Couleur, Quinte
                                 self.text = "{} gagne avec {}".format(joueur_gagnant.nom, combinaison[0])
                             case 7:
-                                self.text = "{} gagne avec {} de {} et {}".format(joueur_gagnant.nom, combinaison[0], combinaison[1][0], combinaison[1][1])
+                                self.text = "{} gagne avec {} de {} et {}".format(joueur_gagnant.nom, combinaison[0], self.nomCarte(combinaison[1][0]), self.nomCarte(combinaison[1][1]))
                                 
                         self.marquerGagnant(joueur_gagnant)
                         return #fin fonction
@@ -74,20 +74,21 @@ class DeterminerGagnant():
                             if len(joueurs_meilleurs_paires) == 1:
                                 #on a un gagnant
                                 joueur_gagnant = joueurs_meilleurs_paires[0]
-                                self.text = "{} gagne avec {} de {} et {}".format(joueur_gagnant.nom, self.mains[joueur_gagnant][i][0], self.mains[joueur_gagnant][i][1][0], self.mains[joueur_gagnant][i][1][1])
+                                self.text = "{} gagne avec {} de {} et {}".format(joueur_gagnant.nom, self.mains[joueur_gagnant][i][0], self.nomCarte(self.mains[joueur_gagnant][i][1][0]), self.nomCarte(self.mains[joueur_gagnant][i][1][1]))
                                 self.marquerGagnant(joueur_gagnant)
                                 break #fin fonction
                                 
                         
                         else: #tout les cas sauf pour la double Paire (et la Quinte Flush Royale)
                             valeur_max = max(combinaisonIdesJoueurs.values())
+                            print(valeur_max)
                             meilleurs_joueurs = [joueur for joueur,valeur in combinaisonIdesJoueurs.items() if valeur==valeur_max]       
                          
                         #pour gerer en cas de doublon (donc on boucle si len(meilleurs_joueurs>1 car egalité de combinaison)
                             if meilleurs_joueurs == 1:
                                 #on a un gagnant
                                 joueur_gagnant = meilleurs_joueurs[0]
-                                text = "{} gagne avec {} de {}".format(joueur_gagnant.nom, self.mains[joueur_gagnant][i][0], self.mains[joueur_gagnant][i][1])
+                                self.text = "{} gagne avec {} de {}".format(joueur_gagnant.nom, self.mains[joueur_gagnant][i][0], self.nomCarte(self.mains[joueur_gagnant][i][1]))
                                 self.marquerGagnant(joueur_gagnant)
                                 break #fin fonction
                             
@@ -105,5 +106,22 @@ class DeterminerGagnant():
         self.partie.interface.update()
         
         self.partie.manche.finManche(gagnant)
+        
+        
+    def nomCarte(self,valeur_carte):
+        '''
+        transforme une carte en valeur int
+        '''
+        match valeur_carte:
+            case 11:
+                return 'Valet'
+            case 12:
+                return 'Dame'
+            case 13:
+                return 'Roi'
+            case 14:
+                return 'As'
+            case _:
+                return str(valeur_carte)
         
         
