@@ -17,7 +17,6 @@ class DeterminerGagnant():
             main_joueur = DeterminerMains(self.partie,joueur)
             self.mains[main_joueur.jeu[0]] = main_joueur.jeu[1:]
         
-        print(self.mains)
         #determine le gagant en comparant les maisn des joueurs pas couché
         self.comparerMains()
         #affiche le gagant
@@ -81,11 +80,10 @@ class DeterminerGagnant():
                         
                         else: #tout les cas sauf pour la double Paire (et la Quinte Flush Royale)
                             valeur_max = max(combinaisonIdesJoueurs.values())
-                            print(valeur_max)
                             meilleurs_joueurs = [joueur for joueur,valeur in combinaisonIdesJoueurs.items() if valeur==valeur_max]       
                          
                         #pour gerer en cas de doublon (donc on boucle si len(meilleurs_joueurs>1 car egalité de combinaison)
-                            if meilleurs_joueurs == 1:
+                            if len(meilleurs_joueurs) == 1:
                                 #on a un gagnant
                                 joueur_gagnant = meilleurs_joueurs[0]
                                 self.text = "{} gagne avec {} de {}".format(joueur_gagnant.nom, self.mains[joueur_gagnant][i][0], self.nomCarte(self.mains[joueur_gagnant][i][1]))
